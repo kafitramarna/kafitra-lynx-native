@@ -1,0 +1,163 @@
+:root {
+  background-color: #0f0f1a;
+  --color-text: #ffffff;
+  --color-text-secondary: rgba(255, 255, 255, 0.65);
+  --color-accent: #6c5ce7;
+  --color-card-bg: rgba(255, 255, 255, 0.08);
+  --color-card-border: rgba(255, 255, 255, 0.12);
+  --color-error: #ff6b6b;
+  --color-divider: rgba(255, 255, 255, 0.08);
+}
+
+.Background {
+  position: fixed;
+  background: radial-gradient(
+    71.43% 62.3% at 46.43% 36.43%,
+    rgba(108, 92, 231, 0.15) 0%,
+    rgba(108, 92, 231, 0.05) 50%,
+    rgba(15, 15, 26, 0) 100%
+  );
+  width: 200vw;
+  height: 200vw;
+  top: -80vw;
+  left: -50vw;
+  border-radius: 50%;
+}
+
+.App {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 60px 24px 40px;
+}
+
+text {
+  color: var(--color-text);
+}
+
+/* Header */
+.Header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.HeaderIcon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.HeaderTitle {
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.HeaderSubtitle {
+  font-size: 14px;
+  color: var(--color-accent);
+  margin-top: 8px;
+  font-weight: 500;
+}
+
+/* Card */
+.Card {
+  width: 100%;
+  max-width: 400px;
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-card-border);
+  border-radius: 16px;
+  padding: 24px;
+}
+
+/* Info rows */
+.InfoContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.InfoRow {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+}
+
+.InfoLabel {
+  font-size: 15px;
+  color: var(--color-text-secondary);
+  font-weight: 400;
+}
+
+.InfoValue {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.Divider {
+  height: 1px;
+  background-color: var(--color-divider);
+}
+
+/* Loading */
+.LoadingContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 0;
+}
+
+.LoadingText {
+  font-size: 15px;
+  color: var(--color-text-secondary);
+}
+
+/* Error */
+.ErrorContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 0;
+}
+
+.ErrorIcon {
+  font-size: 36px;
+  margin-bottom: 12px;
+}
+
+.ErrorTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-error);
+  margin-bottom: 8px;
+}
+
+.ErrorMessage {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  text-align: center;
+  margin-bottom: 16px;
+  line-height: 20px;
+}
+
+.ErrorHint {
+  font-size: 12px;
+  color: var(--color-accent);
+  text-align: center;
+  line-height: 18px;
+}
+
+/* Footer */
+.Footer {
+  margin-top: 40px;
+}
+
+.FooterText {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
