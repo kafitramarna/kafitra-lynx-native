@@ -1,0 +1,11 @@
+{
+  "name": "kafitra-lynx-native",
+  "private": true,
+  "scripts": {
+    "build": "pnpm -r --filter @kafitra/* run build",
+    "dev:demo": "pnpm --filter demo run dev"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.0"
+  }
+}
