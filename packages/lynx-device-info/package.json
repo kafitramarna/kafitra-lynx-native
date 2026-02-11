@@ -1,0 +1,36 @@
+{
+  "name": "@kafitra/lynx-device-info",
+  "version": "0.1.0",
+  "description": "Lynx Native Module for accessing Android device information",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "android"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "clean": "rimraf dist",
+    "prepublishOnly": "npm run build"
+  },
+  "peerDependencies": {
+    "lynx": "*"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.0",
+    "rimraf": "^5.0.0"
+  },
+  "keywords": [
+    "lynx",
+    "native-module",
+    "device-info",
+    "android"
+  ],
+  "author": "Kafitra",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kafitra/lynx-native.git",
+    "directory": "packages/lynx-device-info"
+  }
+}
