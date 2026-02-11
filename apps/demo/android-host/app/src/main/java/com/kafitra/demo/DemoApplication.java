@@ -1,0 +1,62 @@
+package com.kafitra.demo;
+
+import android.app.Application;
+
+import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.imagepipeline.core.ImagePipelineConfig;
+import com.facebook.imagepipeline.memory.PoolConfig;
+import com.facebook.imagepipeline.memory.PoolFactory;
+
+import com.lynx.tasm.LynxEnv;
+import com.lynx.tasm.service.LynxServiceCenter;
+import com.lynx.service.http.LynxHttpService;
+import com.lynx.service.image.LynxImageService;
+import com.lynx.service.log.LynxLogService;
+
+import com.kafitra.lynxdeviceinfo.LynxDeviceInfoModule;
+
+/**
+ * Application class that initializes Lynx runtime and registers native modules.
+ */
+public class DemoApplication extends Application {
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        initLynxService();
+        initLynxEnv();
+    }
+
+    /**
+     * Initialize Lynx services: Image (Fresco), Log, and Http.
+     */
+    private void initLynxService() {
+        // Initialize Fresco (required by LynxImageService)
+        final PoolFactory factory = new PoolFactory(PoolConfig.newBuilder().build());
+        ImagePipelineConfig.Builder builder = ImagePipelineConfig
+                .newBuilder(getApplicationContext())
+                .setPoolFactory(factory);
+        Fresco.initialize(getApplicationContext(), builder.build());
+
+        // Register Lynx services
+        LynxServiceCenter.inst().registerService(LynxImageService.getInstance());
+        LynxServiceCenter.inst().registerService(LynxLogService.INSTANCE);
+        LynxServiceCenter.inst().registerService(LynxHttpService.INSTANCE);
+    }
+
+    /**
+     * Initialize LynxEnv and register native modules.
+     */
+    private void initLynxEnv() {
+        // Initialize the Lynx engine
+        LynxEnv.inst().init(this, null, null, null);
+
+        // ============================================
+        // REGISTER NATIVE MODULES HERE
+        // ============================================
+        LynxEnv.inst().registerModule(
+                "LynxDeviceInfo",
+                LynxDeviceInfoModule.class
+        );
+    }
+}
