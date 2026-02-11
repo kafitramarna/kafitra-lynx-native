@@ -30,7 +30,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/kafitra/lynx-native.git",
+    "url": "https://github.com/kafitramarna/kafitra-lynx-native.git",
     "directory": "packages/lynx-device-info"
   }
 }
