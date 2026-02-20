@@ -1,5 +1,6 @@
 import * as path from "node:path";
 import * as fs from "node:fs";
+import { spawnSync } from "node:child_process";
 import * as log from "../utils/logger.js";
 import { runLink } from "./link.js";
 import { ensureGradleWrapperJar } from "../utils/gradle.js";
@@ -564,10 +565,30 @@ export async function runPrebuild(opts: PrebuildOptions): Promise<void> {
   log.header("✔ Prebuild complete");
   log.blank();
 
-  // ── Copy bundle to assets if already built ────────────────────────────────
+  // ── Build bundle if not yet built, then copy to assets ──────────────────
   const bundleSrc = path.join(projectRoot, "dist", "main.lynx.bundle");
   const bundleDest = path.join(assetsDir, "main.lynx.bundle");
   let bundleCopied = false;
+
+  if (!fs.existsSync(bundleSrc)) {
+    // Detect package manager
+    const pm = fs.existsSync(path.join(projectRoot, "pnpm-lock.yaml"))
+      ? "pnpm"
+      : fs.existsSync(path.join(projectRoot, "yarn.lock"))
+        ? "yarn"
+        : "npm";
+    const buildCmd = pm === "yarn" ? ["yarn", "build"] : [pm, "run", "build"];
+    log.step(`Building bundle (${buildCmd.join(" ")})…`);
+    const result = spawnSync(buildCmd[0]!, buildCmd.slice(1), {
+      cwd: projectRoot,
+      stdio: "inherit",
+      shell: process.platform === "win32",
+    });
+    if (result.status !== 0) {
+      log.warn("Bundle build failed — skipping asset copy.");
+    }
+  }
+
   if (fs.existsSync(bundleSrc)) {
     try {
       fs.copyFileSync(bundleSrc, bundleDest);

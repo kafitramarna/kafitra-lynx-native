@@ -2,6 +2,22 @@
 
 All notable changes to `@kafitra/lynx-cli` will be documented in this file.
 
+## [0.2.1] — 2026-02-21
+
+### Added
+
+- **`isPortInUse(port)`** (`utils/terminal.ts`) — Checks if a port is already bound before opening a new terminal, preventing duplicate dev server instances.
+
+- **`prebuild` auto-build bundle** — If `dist/main.lynx.bundle` does not exist when prebuild completes, automatically runs `pnpm/yarn/npm run build` before copying to assets. No more manual build step required.
+
+### Fixed
+
+- **Dev server starts before device detection** (`run android`) — Dev server is now started (or detected as already running) at Step 2, before connecting to a device. This ensures the bundle URL is reachable the moment the app launches.
+
+- **No duplicate dev server** (`run android`) — `isPortInUse()` check prevents opening a new terminal window if port 3000 is already in use.
+
+- **`adb`/`emulator` hang fixed** (`utils/android.ts`) — All `execSync` calls now have explicit timeouts: `adb devices` → 10 s, `emulator -list-avds` → 10 s, `adb shell getprop` → 5 s. Previously these could hang indefinitely if the ADB daemon failed to start.
+
 ## [0.2.0] — 2026-02-21
 
 ### Added
