@@ -1,12 +1,13 @@
 {
   "name": "@kafitra/lynx-device-info",
-  "version": "0.1.0",
-  "description": "Lynx Native Module for accessing Android device information",
+  "version": "0.2.0",
+  "description": "Lynx Native Module for accessing device information (Android + iOS)",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
     "dist",
-    "android"
+    "android",
+    "ios"
   ],
   "scripts": {
     "build": "tsc",
@@ -24,7 +25,8 @@
     "lynx",
     "native-module",
     "device-info",
-    "android"
+    "android",
+    "ios"
   ],
   "author": "Kafitra",
   "license": "MIT",
