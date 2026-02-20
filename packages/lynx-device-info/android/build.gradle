@@ -1,11 +1,5 @@
 apply plugin: 'com.android.library'
 
-repositories {
-    google()
-    mavenCentral()
-    maven { url = uri("https://artifact.bytedance.com/repository/lynx/") }
-}
-
 android {
     namespace 'com.kafitra.lynxdeviceinfo'
     compileSdkVersion 34

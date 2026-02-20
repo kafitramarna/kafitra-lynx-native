@@ -1,7 +1,7 @@
 {
   "name": "@kafitra/lynx-cli",
-  "version": "0.1.0",
-  "description": "CLI companion for Lynx Native Module auto-linking",
+  "version": "0.2.0",
+  "description": "Developer workflow CLI for Lynx Native Modules — autolink, run, prebuild, dev, doctor",
   "type": "module",
   "bin": {
     "lynx": "./dist/index.js"
