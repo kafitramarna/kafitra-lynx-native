@@ -1,7 +1,7 @@
 # @kafitra/lynx-cli
 
-> CLI tool for [Lynx](https://lynxjs.org) Native Module auto-linking.  
-> Run `lynx link` after installing a new Lynx Native Module to wire it up automatically.
+> Developer workflow CLI for [Lynx](https://lynxjs.org) Native Modules.  
+> From project generation to device launch — one tool for the full Android/iOS dev cycle.
 >
 > **Repository:** [github.com/kafitramarna/kafitra-lynx-native](https://github.com/kafitramarna/kafitra-lynx-native)
 
@@ -9,153 +9,243 @@
 
 ## Overview
 
-`@kafitra/lynx-cli` automates the Android integration boilerplate for Lynx Native Modules.  
-A single command scans your project's `node_modules`, generates Java glue code, and patches your Gradle files — no manual edits required.
-
 ```
-apps/my-app/
-├── android/
-│   ├── settings.gradle          ← patched: include ':lynx-device-info'
-│   └── app/
-│       ├── build.gradle         ← patched: implementation project(':...')
-│       └── src/main/java/com/example/app/
-│           └── LynxAutolinkRegistry.java   ← generated
+lynx doctor          ← check your environment
+lynx prebuild        ← generate Android host project
+lynx link            ← wire native modules into Gradle
+lynx run android     ← build + install + launch on device
+lynx dev             ← start JS dev server
+lynx run ios         ← build + launch on iOS simulator (macOS)
 ```
 
 ---
 
 ## Installation
 
-### Monorepo (recommended)
-
 ```bash
 pnpm add -D @kafitra/lynx-cli
+# or
+npm install --save-dev @kafitra/lynx-cli
 ```
 
-Then add a script to the host app's `package.json`:
+Add to `package.json` scripts:
 
 ```json
 {
   "scripts": {
-    "link:android": "lynx link --android-dir android-host"
+    "android": "lynx run android --android-dir android-host",
+    "dev": "lynx dev",
+    "doctor": "lynx doctor"
   }
 }
 ```
 
-### Standalone / external project
+---
+
+## Commands
+
+### `lynx doctor`
+
+Check your development environment before you start.
 
 ```bash
-npx @kafitra/lynx-cli link
+npx @kafitra/lynx-cli doctor
 ```
+
+| Check            | Required | Description                      |
+| ---------------- | -------- | -------------------------------- |
+| Node.js ≥ 18     | critical | Runtime version                  |
+| Java (JDK) ≥ 17  | critical | Android build toolchain          |
+| adb              | critical | Android Debug Bridge             |
+| ANDROID_HOME     | warning  | Android SDK root                 |
+| Gradle wrapper   | critical | `gradlew` + `gradle-wrapper.jar` |
+| Connected device | warning  | At least one device/emulator     |
+
+Exits with code `1` if any critical check fails.
 
 ---
 
-## Usage
+### `lynx prebuild`
+
+Generate a minimal clean Android host project from template.
+
+```bash
+npx @kafitra/lynx-cli prebuild --package com.example.myapp
+```
+
+| Option                  | Default   | Description                                |
+| ----------------------- | --------- | ------------------------------------------ |
+| `--package <id>`        | —         | **Required.** Java package / applicationId |
+| `--android-dir <path>`  | `android` | Output directory name                      |
+| `--project-root <path>` | `cwd`     | Project root                               |
+| `--force`               | off       | Overwrite existing directory               |
+
+**Generates:**
 
 ```
-lynx <command> [options]
+android/
+├── settings.gradle
+├── build.gradle
+├── gradlew / gradlew.bat
+├── gradle/wrapper/gradle-wrapper.properties
+└── app/
+    ├── build.gradle          ← Lynx 3.6.0 deps pre-configured
+    ├── proguard-rules.pro
+    └── src/main/
+        ├── AndroidManifest.xml
+        ├── assets/            ← put main.lynx.bundle here
+        └── java/com/example/myapp/
+            ├── LynxApplication.java
+            ├── MainActivity.java
+            ├── LynxTemplateProvider.java
+            └── LynxAutolinkRegistry.java
 ```
+
+Auto-runs `lynx link` after generation to wire up any installed modules.
+
+> **Note:** `gradle-wrapper.jar` is not included. Run `gradle wrapper --gradle-version 8.2` inside the Android directory, or copy the jar from an existing project.
+
+---
 
 ### `lynx link`
 
-Scans `node_modules`, generates `LynxAutolinkRegistry.java`, and patches `settings.gradle` + `app/build.gradle`.
+Scan `node_modules`, generate `LynxAutolinkRegistry.java`, and patch `settings.gradle` + `app/build.gradle`.
 
 ```bash
 npx @kafitra/lynx-cli link [options]
 ```
 
-| Option                  | Default                       | Description                                                         |
-| ----------------------- | ----------------------------- | ------------------------------------------------------------------- |
-| `--project-root <path>` | `process.cwd()`               | Root of the host project (where `node_modules` lives)               |
-| `--android-dir <path>`  | `android`                     | Path to the Android project directory, relative to `--project-root` |
-| `--java-package <name>` | inferred from `applicationId` | Java package for the generated `LynxAutolinkRegistry` class         |
+| Option                  | Default                       | Description                                           |
+| ----------------------- | ----------------------------- | ----------------------------------------------------- |
+| `--project-root <path>` | `cwd`                         | Root of the host project (where `node_modules` lives) |
+| `--android-dir <path>`  | `android`                     | Android directory name                                |
+| `--java-package <name>` | inferred from `applicationId` | Java package for the registry class                   |
 
-**Examples:**
+All patch operations are **idempotent** — running the command twice produces the same result.
 
-```bash
-# Standard layout (android/ next to package.json)
-npx @kafitra/lynx-cli link
-
-# Custom android directory name
-npx @kafitra/lynx-cli link --android-dir android-host
-
-# Running from repo root, targeting a specific app
-npx @kafitra/lynx-cli link --project-root apps/demo --android-dir android-host
-
-# Explicit Java package
-npx @kafitra/lynx-cli link --java-package com.example.app
-```
-
----
-
-## What `link` does
-
-Running `lynx link` performs five steps:
-
-```
-→  Scanning for Lynx Native Modules…
-ℹ  Found 1 module(s):
-ℹ    • @kafitra/lynx-device-info  (LynxDeviceInfo)
-
-→  Generating LynxAutolinkRegistry.java…
-✔  Generated: android/app/src/main/java/com/example/app/LynxAutolinkRegistry.java
-
-→  Injecting settings.gradle entries…
-✔  Updated: android/settings.gradle
-
-→  Injecting app/build.gradle dependencies…
-✔  Updated: android/app/build.gradle
-
-✔  Linking complete
-```
-
-1. **Scan** — finds all packages in `node_modules` that contain a `lynx.module.json`
-2. **Resolve package** — infers the Java package from `applicationId` in `app/build.gradle`
-3. **Generate registry** — writes `LynxAutolinkRegistry.java` with `registerAll()`
-4. **Patch settings.gradle** — inserts `include ':module-name'` (idempotent, marker-based)
-5. **Patch app/build.gradle** — inserts `implementation project(':module-name')` (idempotent)
-
-All patch operations are **idempotent**: running the command twice produces the same result.
-
----
-
-## One-time Application class setup
-
-After running `lynx link` for the first time, call `LynxAutolinkRegistry.registerAll()` in your `Application` class where you initialize Lynx:
+**One-time Application class setup:**
 
 ```java
-// DemoApplication.java
 private void initLynxEnv() {
     LynxEnv.inst().init(this, null, null, null);
     LynxAutolinkRegistry.registerAll(); // ← call once
 }
 ```
 
-You do **not** need to update this call again when adding new modules — just re-run `lynx link`.
+---
+
+### `lynx run android`
+
+Auto-link → build APK → install → launch. One command replaces all manual steps.
+
+```bash
+npx @kafitra/lynx-cli run android [options]
+```
+
+| Option                  | Default      | Description                   |
+| ----------------------- | ------------ | ----------------------------- |
+| `--project-root <path>` | `cwd`        | Root of the host project      |
+| `--android-dir <path>`  | `android`    | Android directory name        |
+| `--device <serial>`     | first device | Target specific device serial |
+| `--no-link`             | off          | Skip auto-running `lynx link` |
+
+**What it does:**
+
+1. Runs `lynx link` (unless `--no-link`)
+2. Detects connected devices via `adb devices`
+3. Runs `gradlew installDebug` (streams output)
+4. Sets up `adb reverse tcp:3000 tcp:3000`
+5. Launches app via `adb shell am start`
+
+**Examples:**
+
+```bash
+# Standard
+npx @kafitra/lynx-cli run android
+
+# Custom android dir (monorepo)
+npx @kafitra/lynx-cli run android --android-dir android-host
+
+# From repo root
+npx @kafitra/lynx-cli run android --project-root apps/demo --android-dir android-host
+
+# Target specific device
+npx @kafitra/lynx-cli run android --device emulator-5554
+```
+
+---
+
+### `lynx dev`
+
+Start the JS dev server and display bundle URLs for all network interfaces.
+
+```bash
+npx @kafitra/lynx-cli dev [options]
+```
+
+| Option                  | Default | Description                            |
+| ----------------------- | ------- | -------------------------------------- |
+| `--project-root <path>` | `cwd`   | Project root containing `package.json` |
+| `--port <number>`       | `3000`  | Dev server port                        |
+
+Auto-detects package manager (`pnpm`, `yarn`, or `npm`) and spawns `run dev`.  
+Prints all bundle URLs for localhost and LAN. Ctrl+C shuts down cleanly.
+
+```
+→  Starting dev server…
+
+ℹ  Bundle URLs:
+ℹ    Local:   http://localhost:3000/main.lynx.bundle
+ℹ    Network: http://192.168.1.42:3000/main.lynx.bundle
+
+ℹ  Android port forwarding:
+ℹ    adb reverse tcp:3000 tcp:3000
+```
+
+---
+
+### `lynx run ios`
+
+Build and launch on iOS simulator. **macOS only.**
+
+```bash
+npx @kafitra/lynx-cli run ios --bundle-id com.example.myapp
+```
+
+| Option                  | Default | Description                                  |
+| ----------------------- | ------- | -------------------------------------------- |
+| `--project-root <path>` | `cwd`   | Root of the host project                     |
+| `--ios-dir <path>`      | `ios`   | iOS directory name                           |
+| `--bundle-id <id>`      | —       | iOS bundle identifier (for simulator launch) |
+| `--no-pod-install`      | off     | Skip `pod install`                           |
+
+**What it does:**
+
+1. Guards non-macOS systems
+2. Validates `ios/*.xcworkspace` exists
+3. Runs `pod install`
+4. Builds via `xcodebuild -sdk iphonesimulator`
+5. Launches on booted simulator via `xcrun simctl launch`
 
 ---
 
 ## Monorepo usage
 
-In a pnpm/npm workspaces monorepo, run the command from the app's workspace root (where `node_modules` is populated):
-
 ```bash
-# From repo root
-node packages/lynx-cli/dist/index.js link \
+# From repo root, targeting a specific app
+npx @kafitra/lynx-cli run android \
   --project-root apps/demo \
   --android-dir android-host
 
 # Or via workspace script
-pnpm --filter @your-scope/demo run link:android
+pnpm --filter @your/demo run android
 ```
-
-The scanner walks up the directory tree to find all `node_modules` directories, supporting both hoisted and non-hoisted package layouts.
 
 ---
 
 ## How a module declares itself
 
-Each Lynx Native Module package must include a `lynx.module.json` at its package root:
+Each Lynx Native Module must include a `lynx.module.json` at its package root:
 
 ```json
 {
@@ -167,15 +257,30 @@ Each Lynx Native Module package must include a `lynx.module.json` at its package
 }
 ```
 
-And list it in `files[]` in `package.json`:
-
-```json
-{
-  "files": ["dist", "android", "ios", "lynx.module.json"]
-}
-```
-
 See [`@kafitra/lynx-autolink`](../lynx-autolink/README.md) for the full schema reference.
+
+---
+
+## Troubleshooting
+
+**`No Android devices or emulators found`**  
+→ Connect a device with USB debugging enabled, or start an AVD emulator.
+
+**`Gradle wrapper not found`**  
+→ Run `lynx prebuild --package <id>` to generate the project, or  
+→ Run `gradle wrapper --gradle-version 8.2` inside your Android directory.
+
+**`pod install failed: CocoaPods not found`**  
+→ `sudo gem install cocoapods`
+
+**`adb: command not found`**  
+→ Install Android SDK Platform-Tools and add to `PATH`.
+
+**`ANDROID_HOME not set`**  
+→ Set it to your SDK path. Run `lynx doctor` for exact instructions.
+
+**Build fails with `AbstractMethodError`**  
+→ Do not register `LynxHttpService` — it is incompatible with `lynx:3.6.0` core.
 
 ---
 
@@ -191,7 +296,9 @@ lynx --help      # print usage
 ## Requirements
 
 - Node.js ≥ 18
-- Android project with Gradle (AGP ≥ 7.x)
+- JDK ≥ 17 (for Android builds)
+- Android SDK + `adb` in PATH
+- AGP ≥ 7.x, Gradle ≥ 8.x
 - Each Lynx Native Module must have `lynx.module.json`
 
 ---
