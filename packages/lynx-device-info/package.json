@@ -35,5 +35,11 @@
     "type": "git",
     "url": "https://github.com/kafitramarna/kafitra-lynx-native.git",
     "directory": "packages/lynx-device-info"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

@@ -28,5 +28,16 @@
     "native-modules",
     "android"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kafitramarna/kafitra-lynx-native.git",
+    "directory": "packages/lynx-autolink"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
 }
