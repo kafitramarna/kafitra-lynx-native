@@ -9,7 +9,6 @@ import com.facebook.imagepipeline.memory.PoolFactory;
 
 import com.lynx.tasm.LynxEnv;
 import com.lynx.tasm.service.LynxServiceCenter;
-import com.lynx.service.http.LynxHttpService;
 import com.lynx.service.image.LynxImageService;
 import com.lynx.service.log.LynxLogService;
 
@@ -39,7 +38,6 @@ public class DemoApplication extends Application {
         // Register Lynx services
         LynxServiceCenter.inst().registerService(LynxImageService.getInstance());
         LynxServiceCenter.inst().registerService(LynxLogService.INSTANCE);
-        LynxServiceCenter.inst().registerService(LynxHttpService.INSTANCE);
     }
 
     /**
