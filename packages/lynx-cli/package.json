@@ -1,0 +1,36 @@
+{
+  "name": "@kafitra/lynx-cli",
+  "version": "0.1.0",
+  "description": "CLI companion for Lynx Native Module auto-linking",
+  "type": "module",
+  "bin": {
+    "lynx": "./dist/index.js"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "clean": "node --eval \"import('fs').then(fs => fs.default.rmSync('dist', { recursive: true, force: true }))\""
+  },
+  "dependencies": {
+    "@kafitra/lynx-autolink": "workspace:*",
+    "picocolors": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.3.0"
+  },
+  "keywords": [
+    "lynx",
+    "cli",
+    "autolink",
+    "native-modules"
+  ],
+  "license": "MIT"
+}

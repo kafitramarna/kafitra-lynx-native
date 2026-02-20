@@ -1,42 +1,78 @@
-import { useEffect, useState } from '@lynx-js/react'
-import { DeviceInfo } from '@kafitra/lynx-device-info'
+import { useEffect, useState } from "@lynx-js/react";
+import {
+  getBrand,
+  getModel,
+  getSDKVersion,
+  getManufacturer,
+  getDeviceId,
+  getSystemName,
+  getSystemVersion,
+} from "@kafitra/lynx-device-info";
 
-import './App.css'
+import "./App.css";
 
 interface DeviceState {
-  brand: string
-  model: string
-  sdkVersion: number | null
+  brand: string;
+  model: string;
+  sdkVersion: number | null;
+  manufacturer: string;
+  deviceId: string;
+  systemName: string;
+  systemVersion: string;
 }
 
 export function App() {
   const [device, setDevice] = useState<DeviceState>({
-    brand: '...',
-    model: '...',
+    brand: "...",
+    model: "...",
     sdkVersion: null,
-  })
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+    manufacturer: "...",
+    deviceId: "...",
+    systemName: "...",
+    systemVersion: "...",
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadDeviceInfo() {
       try {
-        const [brand, model, sdkVersion] = await Promise.all([
-          DeviceInfo.getBrand(),
-          DeviceInfo.getModel(),
-          DeviceInfo.getSDKVersion(),
-        ])
-        setDevice({ brand, model, sdkVersion })
-        setLoading(false)
+        const [
+          brand,
+          model,
+          sdkVersion,
+          manufacturer,
+          deviceId,
+          systemName,
+          systemVersion,
+        ] = await Promise.all([
+          getBrand(),
+          getModel(),
+          getSDKVersion(),
+          getManufacturer(),
+          getDeviceId(),
+          getSystemName(),
+          getSystemVersion(),
+        ]);
+        setDevice({
+          brand,
+          model,
+          sdkVersion,
+          manufacturer,
+          deviceId,
+          systemName,
+          systemVersion,
+        });
+        setLoading(false);
       } catch (e) {
         const message =
-          e instanceof Error ? e.message : 'Unknown error occurred'
-        setError(message)
-        setLoading(false)
+          e instanceof Error ? e.message : "Unknown error occurred";
+        setError(message);
+        setLoading(false);
       }
     }
-    loadDeviceInfo()
-  }, [])
+    loadDeviceInfo();
+  }, []);
 
   return (
     <view>
@@ -46,7 +82,9 @@ export function App() {
         <view className="Header">
           <text className="HeaderIcon">📱</text>
           <text className="HeaderTitle">Device Info</text>
-          <text className="HeaderSubtitle">@kafitra/lynx-device-info</text>
+          <text className="HeaderSubtitle">
+            @kafitra/lynx-device-info v0.2.0
+          </text>
         </view>
 
         {/* Content */}
@@ -57,7 +95,7 @@ export function App() {
               <text className="ErrorTitle">Native Module Error</text>
               <text className="ErrorMessage">{error}</text>
               <text className="ErrorHint">
-                Make sure to register LynxDeviceInfoModule in your Android host.
+                Make sure to register LynxDeviceInfoModule in your host app.
               </text>
             </view>
           ) : loading ? (
@@ -81,8 +119,28 @@ export function App() {
                 <text className="InfoValue">
                   {device.sdkVersion !== null
                     ? String(device.sdkVersion)
-                    : 'N/A'}
+                    : "N/A"}
                 </text>
+              </view>
+              <view className="Divider" />
+              <view className="InfoRow">
+                <text className="InfoLabel">Manufacturer</text>
+                <text className="InfoValue">{device.manufacturer}</text>
+              </view>
+              <view className="Divider" />
+              <view className="InfoRow">
+                <text className="InfoLabel">Device ID</text>
+                <text className="InfoValue">{device.deviceId}</text>
+              </view>
+              <view className="Divider" />
+              <view className="InfoRow">
+                <text className="InfoLabel">System</text>
+                <text className="InfoValue">{device.systemName}</text>
+              </view>
+              <view className="Divider" />
+              <view className="InfoRow">
+                <text className="InfoLabel">OS Version</text>
+                <text className="InfoValue">{device.systemVersion}</text>
               </view>
             </view>
           )}
@@ -90,11 +148,9 @@ export function App() {
 
         {/* Footer */}
         <view className="Footer">
-          <text className="FooterText">
-            Powered by Lynx Native Modules
-          </text>
+          <text className="FooterText">Powered by Lynx Native Modules</text>
         </view>
       </view>
     </view>
-  )
+  );
 }

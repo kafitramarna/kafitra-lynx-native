@@ -1,5 +1,11 @@
 apply plugin: 'com.android.library'
 
+repositories {
+    google()
+    mavenCentral()
+    maven { url = uri("https://artifact.bytedance.com/repository/lynx/") }
+}
+
 android {
     namespace 'com.kafitra.lynxdeviceinfo'
     compileSdkVersion 34
@@ -16,6 +22,6 @@ android {
 }
 
 dependencies {
-    // Lynx SDK should be provided by the host app
-    compileOnly 'com.lynx:lynx-sdk:+'
+    // Provided at runtime by the host app — compileOnly to avoid duplicate classes
+    compileOnly "org.lynxsdk.lynx:lynx:3.6.0"
 }

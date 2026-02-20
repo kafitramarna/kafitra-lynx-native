@@ -1,0 +1,7 @@
+{
+  "name": "LynxDeviceInfo",
+  "android": {
+    "moduleClass": "com.kafitra.lynxdeviceinfo.LynxDeviceInfoModule",
+    "sourceDir": "android"
+  }
+}
