@@ -3,7 +3,8 @@
   "private": true,
   "scripts": {
     "build": "pnpm -r --filter @kafitra/* run build",
-    "dev:demo": "pnpm --filter demo run dev"
+    "dev:demo": "pnpm --filter demo run dev",
+    "link:demo": "pnpm --filter @kafitra/lynx-cli run build && node packages/lynx-cli/dist/index.js link --project-root apps/demo --android-dir android-host"
   },
   "devDependencies": {
     "typescript": "^5.3.0"

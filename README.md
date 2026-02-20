@@ -4,8 +4,7 @@
 
 **Production-ready native modules for [Lynx](https://lynxjs.org/) cross-platform framework.**
 
-[![npm](https://img.shields.io/npm/v/@kafitra/lynx-device-info?label=%40kafitra%2Flynx-device-info&color=blue)](https://www.npmjs.com/package/@kafitra/lynx-device-info)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![npm](https://img.shields.io/npm/v/@kafitra/lynx-device-info?label=%40kafitra%2Flynx-device-info&color=blue)](https://www.npmjs.com/package/@kafitra/lynx-device-info)[![npm](https://img.shields.io/npm/v/@kafitra/lynx-cli?label=%40kafitra%2Flynx-cli&color=purple)](https://www.npmjs.com/package/@kafitra/lynx-cli)[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-Android-brightgreen.svg)]()
 
 </div>
@@ -25,8 +24,18 @@
   <tbody>
     <tr>
       <td><a href="./packages/lynx-device-info"><code>@kafitra/lynx-device-info</code></a></td>
+      <td><code>0.2.0</code></td>
+      <td>Access device brand, model, SDK version, and more</td>
+    </tr>
+    <tr>
+      <td><a href="./packages/lynx-autolink"><code>@kafitra/lynx-autolink</code></a></td>
       <td><code>0.1.0</code></td>
-      <td>Access device brand, model, and SDK version</td>
+      <td>Auto-linking library — scanner, Java registry generator, Gradle injector</td>
+    </tr>
+    <tr>
+      <td><a href="./packages/lynx-cli"><code>@kafitra/lynx-cli</code></a></td>
+      <td><code>0.1.0</code></td>
+      <td>CLI companion — <code>npx @kafitra/lynx-cli link</code></td>
     </tr>
   </tbody>
 </table>
@@ -36,13 +45,18 @@
 ```
 kafitra-lynx-native/
 ├── packages/                    # Native module libraries
-│   └── lynx-device-info/        # Device info module
-│       ├── src/                  # TypeScript source
-│       ├── android/              # Android native implementation
-│       └── dist/                 # Compiled output
+│   ├── lynx-device-info/        # Device info module
+│   │   ├── src/                 # TypeScript source
+│   │   ├── android/             # Android native implementation
+│   │   ├── lynx.module.json     # Auto-link metadata
+│   │   └── dist/                # Compiled output
+│   ├── lynx-autolink/           # Auto-linking core library
+│   │   └── src/                 # scanner, generator, injectors
+│   └── lynx-cli/                # CLI (npx @kafitra/lynx-cli link)
+│       └── src/
 ├── apps/                        # Example & demo applications
 │   └── demo/                    # Demo app (Rspeedy + Lynx)
-│       ├── src/                  # App source (App.tsx, App.css)
+│       ├── src/                 # App source (App.tsx, App.css)
 │       └── android-host/        # Android host app for testing
 └── package.json                 # Root workspace config
 ```
@@ -93,16 +107,23 @@ npm install @kafitra/lynx-device-info
 pnpm add @kafitra/lynx-device-info
 ```
 
-### Android Setup
+### Android Setup (Auto-linking)
 
-Register the native module in your `Application` class:
+Run the CLI to generate the Java registry and inject Gradle wiring:
+
+```bash
+npx @kafitra/lynx-cli link
+```
+
+Then in your `Application` class — one line:
 
 ```java
-import com.kafitra.lynxdeviceinfo.LynxDeviceInfoModule;
-
-// In your Application.onCreate():
-LynxEnv.inst().registerModule("LynxDeviceInfo", LynxDeviceInfoModule.class);
+// In your Application's initLynxEnv():
+LynxEnv.inst().init(this, null, null, null);
+LynxAutolinkRegistry.registerAll();
 ```
+
+> See the [Auto-linking](#auto-linking) section below for full details.
 
 ### Usage
 
@@ -193,8 +214,94 @@ Here is the list of planned native modules for future development:
 
 - **iOS Support** — Extend all modules with Swift/ObjC native implementations
 - **HarmonyOS Support** — Add ArkTS implementations for Huawei ecosystem
-- **Auto-linking** — Gradle plugin for automatic native module registration
+- **Gradle Plugin** — Gradle plugin variant of auto-linking for zero-config build integration
 - **Testing Framework** — Shared mock utilities for unit testing native modules
+
+## Auto-linking
+
+Starting with **v0.1.0**, all Kafitra Lynx Native Modules support automatic linking — no manual `registerModule` calls needed.
+
+### How it works
+
+1. Each package ships a `lynx.module.json` metadata file at its root.
+2. `@kafitra/lynx-autolink` scans `node_modules` for these files.
+3. `@kafitra/lynx-cli link` orchestrates the full process in one command.
+
+### Usage
+
+```bash
+# 1. Install a Lynx Native Module
+npm install @kafitra/lynx-device-info
+
+# 2. Run the linker (from your Android project root)
+npx @kafitra/lynx-cli link
+
+# With a custom android directory name:
+npx @kafitra/lynx-cli link --android-dir android-host
+
+# With an explicit Java package (if applicationId can't be inferred):
+npx @kafitra/lynx-cli link --java-package com.example.myapp
+```
+
+### What `lynx link` does
+
+| Step | Action                                                                             |
+| ---- | ---------------------------------------------------------------------------------- |
+| 1    | Scans `node_modules` (including hoisted monorepo locations) for `lynx.module.json` |
+| 2    | Generates `android/app/src/main/java/<pkg>/LynxAutolinkRegistry.java`              |
+| 3    | Injects `include ':module-name'` entries into `android/settings.gradle`            |
+| 4    | Injects `implementation project(':module-name')` into `android/app/build.gradle`   |
+
+### Example output
+
+```
+→  Scanning for Lynx Native Modules…
+ℹ  Found 1 module(s):
+ℹ    • @kafitra/lynx-device-info  (LynxDeviceInfo)
+
+→  Generating LynxAutolinkRegistry.java…
+✔  Generated: android/app/src/main/java/com/example/app/LynxAutolinkRegistry.java
+→  Injecting settings.gradle entries…
+✔  Updated: android/settings.gradle
+→  Injecting app/build.gradle dependencies…
+✔  Updated: android/app/build.gradle
+
+✔ Linking complete
+
+ℹ  In your Application class, call:
+ℹ    LynxAutolinkRegistry.registerAll();
+```
+
+### Metadata file (`lynx.module.json`)
+
+Place this file at the **root** of each native module package (next to `package.json`):
+
+```json
+{
+  "name": "LynxDeviceInfo",
+  "android": {
+    "moduleClass": "com.kafitra.lynxdeviceinfo.LynxDeviceInfoModule",
+    "sourceDir": "android"
+  }
+}
+```
+
+| Field                       | Required | Description                                                     |
+| --------------------------- | -------- | --------------------------------------------------------------- |
+| `name`                      | ✅       | Module name as registered with `LynxEnv`                        |
+| `android.moduleClass`       | ✅       | Fully-qualified Java class name                                 |
+| `android.sourceDir`         | ✅       | Relative path to the Android library source (e.g. `"android"`)  |
+| `android.gradleProjectName` | optional | Override Gradle project name (defaults to kebab-cased npm name) |
+
+### Troubleshooting
+
+| Problem                             | Solution                                                                |
+| ----------------------------------- | ----------------------------------------------------------------------- |
+| `No Lynx Native Modules found`      | Ensure the package has `lynx.module.json` at its root                   |
+| `Could not determine applicationId` | Use `--java-package com.example.app`                                    |
+| `build.gradle not found`            | Use `--android-dir` to point to your android folder                     |
+| `Malformed lynx.module.json`        | Check for missing `name`, `android.moduleClass`, or `android.sourceDir` |
+| Duplicate entries after re-run      | `lynx link` is idempotent — safe to re-run, no duplicates added         |
 
 ## Contributing
 
