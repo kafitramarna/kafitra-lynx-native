@@ -103,7 +103,7 @@ android/
 
 Auto-runs `lynx link` after generation to wire up any installed modules.
 
-> **Note:** `gradle-wrapper.jar` is not included. Run `gradle wrapper --gradle-version 8.2` inside the Android directory, or copy the jar from an existing project.
+> **Note:** `gradle-wrapper.jar` is auto-downloaded from GitHub if missing — no manual step needed.
 
 ---
 
@@ -137,6 +137,7 @@ private void initLynxEnv() {
 ### `lynx run android`
 
 Auto-link → build APK → install → launch. One command replaces all manual steps.
+`
 
 ```bash
 npx @kafitra/lynx-cli run android [options]
@@ -152,10 +153,11 @@ npx @kafitra/lynx-cli run android [options]
 **What it does:**
 
 1. Runs `lynx link` (unless `--no-link`)
-2. Detects connected devices via `adb devices`
-3. Runs `gradlew installDebug` (streams output)
-4. Sets up `adb reverse tcp:3000 tcp:3000`
-5. Launches app via `adb shell am start`
+2. Checks if dev server is running on port 3000; starts it in a new terminal if not
+3. Detects connected devices via `adb devices`; auto-launches AVD if none found
+4. Copies `dist/main.lynx.bundle` → assets (if missing), then runs `gradlew installDebug`
+5. Sets up `adb reverse tcp:3000 tcp:3000`
+6. Launches app via `adb shell am start`
 
 **Examples:**
 
