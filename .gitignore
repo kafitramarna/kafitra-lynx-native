@@ -1,4 +1,78 @@
+# ─── Dependencies ────────────────────────────────────────────────────────────
 node_modules/
+
+# ─── Build outputs ───────────────────────────────────────────────────────────
 dist/
 .rsbuild/
+*.tsbuildinfo
+
+# ─── Logs ────────────────────────────────────────────────────────────────────
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ─── Editor / OS ─────────────────────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# ─── Environment ─────────────────────────────────────────────────────────────
+.env
+.env.local
+.env.*.local
+
+# ─── Android ─────────────────────────────────────────────────────────────────
+# Gradle caches & wrappers
+.gradle/
+build/
+**/build/
+
+# Android Studio
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Local machine config (never commit — contains SDK path)
+local.properties
+
+# Generated Gradle wrapper binary (downloaded at build time)
+gradle/wrapper/gradle-wrapper.jar
+**/gradle/wrapper/gradle-wrapper.jar
+
+# Generated gradlew scripts (recreated via gradle wrapper)
+gradlew
+gradlew.bat
+**/gradlew
+**/gradlew.bat
+
+# APK / AAB / mapping
+*.apk
+*.aab
+*.ap_
+*.dex
+output-metadata.json
+
+# Keystore files
+*.jks
+*.keystore
+
+# ProGuard
+proguard/
+mapping.txt
+seeds.txt
+usage.txt
+
+# ─── iOS ─────────────────────────────────────────────────────────────────────
+*.xcworkspace
+Pods/
+DerivedData/
+xcuserdata/
+*.xcscmblueprint
+

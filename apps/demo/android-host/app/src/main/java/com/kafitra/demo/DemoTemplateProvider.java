@@ -25,13 +25,21 @@ public class DemoTemplateProvider extends AbsTemplateProvider {
         this.mContext = context.getApplicationContext();
     }
 
+    /** Asset filename used as the fallback bundle. */
+    private static final String FALLBACK_ASSET = "main.lynx.bundle";
+
     @Override
     public void loadTemplate(String uri, Callback callback) {
         new Thread(() -> {
             try {
                 byte[] data;
                 if (uri.startsWith("http://") || uri.startsWith("https://")) {
-                    data = loadFromNetwork(uri);
+                    try {
+                        data = loadFromNetwork(uri);
+                    } catch (Exception networkError) {
+                        // Dev server unreachable — fall back to the bundled asset silently.
+                        data = loadFromAssets(FALLBACK_ASSET);
+                    }
                 } else {
                     data = loadFromAssets(uri);
                 }

@@ -1,0 +1,32 @@
+{
+  "name": "@kafitra/lynx-autolink",
+  "version": "0.1.0",
+  "description": "Auto-linking library for Lynx Native Modules — scans node_modules, generates Java registry, injects Gradle wiring",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "clean": "node --eval \"import('fs').then(fs => fs.default.rmSync('dist', { recursive: true, force: true }))\""
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.3.0"
+  },
+  "keywords": [
+    "lynx",
+    "autolink",
+    "native-modules",
+    "android"
+  ],
+  "license": "MIT"
+}

@@ -19,16 +19,13 @@ public class MainActivity extends Activity {
 
     private LynxView mLynxView;
 
-    // ============================================
-    // CONFIGURE YOUR BUNDLE URL HERE
-    // ============================================
-
-    // Option 1: Dev server URL (replace with your machine's IP)
-    // Make sure your Android device and dev machine are on the same network
-    private static final String BUNDLE_URL = "http://10.210.83.154:3000/main.lynx.bundle";
-
-    // Option 2: Local asset bundle (for production)
-    // private static final String BUNDLE_URL = "main.lynx.bundle";
+    // Bundle URL is selected automatically:
+    //   Debug builds  → dev server on localhost:3000 (requires: adb reverse tcp:3000 tcp:3000)
+    //   Release builds → assets/main.lynx.bundle bundled inside the APK
+    // DemoTemplateProvider will fall back to the asset bundle if the dev server is unreachable.
+    private static final String BUNDLE_URL = BuildConfig.DEBUG
+            ? "http://localhost:3000/main.lynx.bundle"
+            : "main.lynx.bundle";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
