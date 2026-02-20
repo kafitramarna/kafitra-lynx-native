@@ -12,7 +12,7 @@ import {
 } from "../utils/android.js";
 import { runGradle, ensureGradleWrapperJar } from "../utils/gradle.js";
 import { readApplicationId } from "@kafitra/lynx-autolink";
-import { openDevServerTerminal } from "../utils/terminal.js";
+import { openDevServerTerminal, isPortInUse } from "../utils/terminal.js";
 
 export interface RunAndroidOptions {
   projectRoot?: string;
@@ -56,7 +56,19 @@ export async function runAndroid(opts: RunAndroidOptions = {}): Promise<void> {
     }
   }
 
-  // ── Step 2: Detect connected devices ─────────────────────────────────────
+  // ── Step 2: Start dev server (if not already running) ──────────────────
+  const devPort = 3000;
+  const serverRunning = await isPortInUse(devPort);
+  if (serverRunning) {
+    log.info(`Dev server already running on port ${devPort}.`);
+  } else {
+    log.step("Starting dev server in a new terminal…");
+    openDevServerTerminal(projectRoot, devPort);
+    log.success("Dev server started in a new terminal window.");
+  }
+  log.blank();
+
+  // ── Step 3: Detect connected devices ──────────────────────────────
   log.step("Detecting connected devices…");
   let devices = getConnectedDevices();
 
@@ -92,7 +104,7 @@ export async function runAndroid(opts: RunAndroidOptions = {}): Promise<void> {
   log.info(`Target device: ${targetDevice} (${devices.length} available)`);
   log.blank();
 
-  // ── Step 3: Gradle installDebug ───────────────────────────────────────────
+  // ── Step 4: Gradle installDebug ────────────────────────────────────────
   log.step("Building and installing APK (installDebug)…");
   try {
     // Auto-copy bundle to assets if dist exists but assets doesn't
@@ -112,7 +124,7 @@ export async function runAndroid(opts: RunAndroidOptions = {}): Promise<void> {
   }
   log.blank();
 
-  // ── Step 4: Resolve applicationId ────────────────────────────────────────
+  // ── Step 5: Resolve applicationId ────────────────────────────────────
   const appId = opts.javaPackage ?? readApplicationId(appBuildFile) ?? null;
 
   if (!appId) {
@@ -122,7 +134,7 @@ export async function runAndroid(opts: RunAndroidOptions = {}): Promise<void> {
     process.exit(1);
   }
 
-  // ── Step 5: adb reverse + launch activity ────────────────────────────────
+  // ── Step 6: adb reverse + launch activity ────────────────────────────
   log.step("Setting up adb reverse and launching app…");
   adbReverse(3000);
 
@@ -139,10 +151,6 @@ export async function runAndroid(opts: RunAndroidOptions = {}): Promise<void> {
   log.blank();
   log.info(`App: ${appId}`);
   log.info(`Device: ${targetDevice}`);
-  log.blank();
-  log.step("Opening dev server terminal…");
-  openDevServerTerminal(projectRoot);
-  log.success("Dev server started in a new terminal window.");
   log.blank();
   log.info("Bundle URL: http://localhost:3000/main.lynx.bundle");
   log.info("Port forwarded: adb reverse tcp:3000 tcp:3000");

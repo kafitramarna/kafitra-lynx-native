@@ -11,7 +11,11 @@ export function getGradlew(androidDir: string): string {
 /** Returns list of connected device/emulator serial IDs via `adb devices`. */
 export function getConnectedDevices(): string[] {
   try {
-    const out = execSync("adb devices", { encoding: "utf8", stdio: "pipe" });
+    const out = execSync("adb devices", {
+      encoding: "utf8",
+      stdio: "pipe",
+      timeout: 10_000,
+    });
     return out
       .split("\n")
       .slice(1)
@@ -62,6 +66,7 @@ export function getAvailableAvds(): string[] {
     const out = execSync("emulator -list-avds", {
       encoding: "utf8",
       stdio: "pipe",
+      timeout: 10_000,
     });
     return out
       .split("\n")
@@ -101,7 +106,7 @@ export function waitForDevice(timeoutMs = 120_000): Promise<string> {
         try {
           const result = execSync(
             `adb -s ${serial} shell getprop sys.boot_completed`,
-            { encoding: "utf8", stdio: "pipe" },
+            { encoding: "utf8", stdio: "pipe", timeout: 5_000 },
           );
           if (result.trim() === "1") {
             resolve(serial);

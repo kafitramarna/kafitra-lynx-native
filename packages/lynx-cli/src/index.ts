@@ -7,7 +7,7 @@ import { runDoctor } from "./commands/doctor.js";
 import { runPrebuild } from "./commands/prebuild.js";
 import { runDev } from "./commands/dev.js";
 
-const VERSION = "0.2.0";
+const VERSION = "0.2.1";
 
 /** Extremely lightweight arg parser — no external dependencies. */
 function parseArgs(argv: string[]): {

@@ -1,6 +1,31 @@
 import { spawn, execSync } from "node:child_process";
 import * as fs from "node:fs";
 import * as path from "node:path";
+import * as net from "node:net";
+
+/**
+ * Returns true if something is already listening on the given port.
+ */
+export function isPortInUse(port: number): Promise<boolean> {
+  return new Promise((resolve) => {
+    const socket = new net.Socket();
+    socket.setTimeout(500);
+    socket
+      .once("connect", () => {
+        socket.destroy();
+        resolve(true);
+      })
+      .once("error", () => {
+        socket.destroy();
+        resolve(false);
+      })
+      .once("timeout", () => {
+        socket.destroy();
+        resolve(false);
+      })
+      .connect(port, "127.0.0.1");
+  });
+}
 
 /** Detect the package manager used in a directory. */
 function detectPm(dir: string): string {
