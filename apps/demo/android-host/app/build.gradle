@@ -33,6 +33,7 @@ android {
 }
 
 dependencies {
+    implementation project(':lynx-device-info')
     // Lynx core
     implementation "org.lynxsdk.lynx:lynx:3.6.0"
     implementation "org.lynxsdk.lynx:lynx-jssdk:3.6.0"
