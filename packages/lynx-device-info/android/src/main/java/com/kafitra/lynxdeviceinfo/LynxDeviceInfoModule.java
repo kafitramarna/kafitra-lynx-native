@@ -66,4 +66,57 @@ public class LynxDeviceInfoModule extends LynxModule {
             return -1;
         }
     }
+
+    /**
+     * Returns the device manufacturer name.
+     *
+     * @return Manufacturer string, e.g., "Samsung", "Google", "Xiaomi"
+     */
+    @LynxMethod
+    public String getManufacturer() {
+        try {
+            return Build.MANUFACTURER != null ? Build.MANUFACTURER : "unknown";
+        } catch (Exception e) {
+            return "unknown";
+        }
+    }
+
+    /**
+     * Returns the stable device identifier (hardware codename).
+     * Uses Build.DEVICE, e.g., "generic_x86", "walleye".
+     *
+     * @return Device identifier string
+     */
+    @LynxMethod
+    public String getDeviceId() {
+        try {
+            return Build.DEVICE != null ? Build.DEVICE : "unknown";
+        } catch (Exception e) {
+            return "unknown";
+        }
+    }
+
+    /**
+     * Returns the operating system name.
+     *
+     * @return Always "Android" on this platform
+     */
+    @LynxMethod
+    public String getSystemName() {
+        return "Android";
+    }
+
+    /**
+     * Returns the OS version string (e.g., "14", "13").
+     *
+     * @return OS version from Build.VERSION.RELEASE
+     */
+    @LynxMethod
+    public String getSystemVersion() {
+        try {
+            return Build.VERSION.RELEASE != null ? Build.VERSION.RELEASE : "unknown";
+        } catch (Exception e) {
+            return "unknown";
+        }
+    }
 }
