@@ -1,0 +1,63 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.kafitra.demo2'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.kafitra.demo2"
+        minSdk 24
+        targetSdk 34
+        versionCode 1
+        versionName "1.0"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    buildFeatures {
+        buildConfig true
+    }
+    packaging {
+        resources {
+            excludes += '/META-INF/{AL2.0,LGPL2.1}'
+        }
+    }
+}
+
+dependencies {
+    implementation project(':lynx-device-info')
+    // lynx-autolink-start
+    // lynx-autolink-end
+
+    // Lynx core
+    implementation "org.lynxsdk.lynx:lynx:3.6.0"
+    implementation "org.lynxsdk.lynx:lynx-jssdk:3.6.0"
+    implementation "org.lynxsdk.lynx:lynx-trace:3.6.0"
+    implementation "org.lynxsdk.lynx:primjs:3.6.1"
+
+    // Lynx services
+    implementation "org.lynxsdk.lynx:lynx-service-image:3.6.0"
+    implementation "org.lynxsdk.lynx:lynx-service-log:3.6.0"
+
+    // Image service dependencies
+    implementation "com.facebook.fresco:fresco:2.3.0"
+    implementation "com.facebook.fresco:animated-gif:2.3.0"
+    implementation "com.facebook.fresco:animated-webp:2.3.0"
+    implementation "com.facebook.fresco:webpsupport:2.3.0"
+    implementation "com.facebook.fresco:animated-base:2.3.0"
+    implementation "com.squareup.okhttp3:okhttp:4.9.0"
+
+    // XElement
+    implementation "org.lynxsdk.lynx:xelement:3.6.0"
+    implementation "org.lynxsdk.lynx:xelement-input:3.6.0"
+}

@@ -1,0 +1,21 @@
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+        maven { url = uri("https://artifact.bytedance.com/repository/lynx/") }
+    }
+}
+rootProject.name = "demo2"
+include ':app'
+// lynx-autolink-start
+include ':lynx-device-info'
+project(':lynx-device-info').projectDir = new File(rootDir, '../node_modules/@kafitra/lynx-device-info/android')
+// lynx-autolink-end
