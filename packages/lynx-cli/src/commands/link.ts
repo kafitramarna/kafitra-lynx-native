@@ -131,6 +131,8 @@ export async function runLink(opts: LinkOptions = {}): Promise<void> {
   log.blank();
   log.info(`  LynxAutolinkRegistry.registerAll();`);
   log.blank();
-  log.info("Learn more: https://github.com/kafitra/lynx-native#auto-linking");
+  log.info(
+    "Learn more: https://github.com/kafitramarna/kafitra-lynx-native#auto-linking",
+  );
   log.blank();
 }
