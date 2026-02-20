@@ -1,0 +1,57 @@
+# Changelog
+
+All notable changes to `@kafitra/lynx-device-info` will be documented in this file.
+
+This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+---
+
+## [0.2.0] — 2026-02-20
+
+### Added
+
+- **`getManufacturer(): Promise<string>`** — Returns the device manufacturer name.
+  - Android: `Build.MANUFACTURER` (e.g., `"Samsung"`, `"Google"`)
+  - iOS: Returns `"Apple"` (constant)
+
+- **`getDeviceId(): Promise<string>`** — Returns a stable device identifier.
+  - Android: `Build.DEVICE` (hardware codename, e.g., `"walleye"`, `"generic_x86"`)
+  - iOS: `UIDevice.current.identifierForVendor` UUID string
+
+- **`getSystemName(): Promise<string>`** — Returns the operating system name.
+  - Android: Returns `"Android"` (constant)
+  - iOS: `UIDevice.current.systemName` (e.g., `"iOS"`, `"iPadOS"`)
+
+- **`getSystemVersion(): Promise<string>`** — Returns the OS version string.
+  - Android: `Build.VERSION.RELEASE` (e.g., `"14"`, `"13"`)
+  - iOS: `UIDevice.current.systemVersion` (e.g., `"17.0"`)
+
+- **iOS native module** — Added `ios/LynxDeviceInfoModule.h` and `ios/LynxDeviceInfoModule.m` implementing all 7 methods via `<LynxModule>` protocol using `UIKit`.
+
+- **Named function exports** — All methods are now importable as named functions:
+  ```ts
+  import { getBrand, getManufacturer, getDeviceId, getSystemName, getSystemVersion } from "@kafitra/lynx-device-info";
+  ```
+  The existing `DeviceInfo` object export is preserved for backward compatibility.
+
+- **`ensureString` internal helper** — Prevents `null`/`undefined` from leaking out of native calls; all string methods return at least `"unknown"`.
+
+### Changed
+
+- `package.json`: version bumped to `0.2.0`
+- `package.json`: description updated to reflect Android + iOS support
+- `package.json`: `ios` directory added to `files` array
+- README fully rewritten with cross-platform API table, iOS setup instructions, and named import examples
+
+---
+
+## [0.1.0] — Initial Release
+
+### Added
+
+- **`getBrand(): Promise<string>`** — Returns the device brand (`Build.BRAND`).
+- **`getModel(): Promise<string>`** — Returns the device model (`Build.MODEL`).
+- **`getSDKVersion(): Promise<number>`** — Returns the Android SDK version integer (`Build.VERSION.SDK_INT`).
+- Android native module (`LynxDeviceInfoModule.java`) extending `LynxModule` with `@LynxMethod` annotations.
+- TypeScript types (`DeviceInfoInterface`, `NativeLynxDeviceInfo`).
+- Promise-based `DeviceInfo` object export.
