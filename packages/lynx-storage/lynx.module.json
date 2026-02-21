@@ -1,0 +1,7 @@
+{
+  "name": "LynxStorage",
+  "android": {
+    "moduleClass": "com.kafitra.lynxstorage.LynxStorageModule",
+    "sourceDir": "android"
+  }
+}

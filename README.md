@@ -4,8 +4,8 @@
 
 **Production-ready native modules for [Lynx](https://lynxjs.org/) cross-platform framework.**
 
-[![npm](https://img.shields.io/npm/v/@kafitra/lynx-device-info?label=%40kafitra%2Flynx-device-info&color=blue)](https://www.npmjs.com/package/@kafitra/lynx-device-info)[![npm](https://img.shields.io/npm/v/@kafitra/lynx-cli?label=%40kafitra%2Flynx-cli&color=purple)](https://www.npmjs.com/package/@kafitra/lynx-cli)[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Platform](https://img.shields.io/badge/Platform-Android-brightgreen.svg)]()
+[![npm](https://img.shields.io/npm/v/@kafitra/lynx-device-info?label=%40kafitra%2Flynx-device-info&color=blue)](https://www.npmjs.com/package/@kafitra/lynx-device-info) [![npm](https://img.shields.io/npm/v/@kafitra/lynx-storage?label=%40kafitra%2Flynx-storage&color=orange)](https://www.npmjs.com/package/@kafitra/lynx-storage) [![npm](https://img.shields.io/npm/v/@kafitra/lynx-cli?label=%40kafitra%2Flynx-cli&color=purple)](https://www.npmjs.com/package/@kafitra/lynx-cli) [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Platform](https://img.shields.io/badge/Platform-Android%20%7C%20iOS-brightgreen.svg)]()
 
 </div>
 
@@ -28,6 +28,11 @@
       <td>Access device brand, model, SDK version, manufacturer, system info, and more</td>
     </tr>
     <tr>
+      <td><a href="./packages/lynx-storage"><code>@kafitra/lynx-storage</code></a></td>
+      <td><code>0.1.0</code></td>
+      <td>Persistent key-value storage — Android SharedPreferences + iOS NSUserDefaults</td>
+    </tr>
+    <tr>
       <td><a href="./packages/lynx-autolink"><code>@kafitra/lynx-autolink</code></a></td>
       <td><code>0.1.0</code></td>
       <td>Auto-linking library — scanner, Java registry generator, Gradle injector</td>
@@ -48,6 +53,13 @@ kafitra-lynx-native/
 │   ├── lynx-device-info/        # Device info module
 │   │   ├── src/                 # TypeScript source
 │   │   ├── android/             # Android native implementation
+│   │   ├── ios/                 # iOS native implementation
+│   │   ├── lynx.module.json     # Auto-link metadata
+│   │   └── dist/                # Compiled output
+│   ├── lynx-storage/            # Persistent key-value storage module
+│   │   ├── src/                 # TypeScript source
+│   │   ├── android/             # Android SharedPreferences implementation
+│   │   ├── ios/                 # iOS NSUserDefaults implementation
 │   │   ├── lynx.module.json     # Auto-link metadata
 │   │   └── dist/                # Compiled output
 │   ├── lynx-autolink/           # Auto-linking core library
@@ -97,9 +109,62 @@ npx @kafitra/lynx-cli run android
 # → installs APK + opens a new terminal with the dev server (hot reload active)
 ```
 
-> **The demo app** (`apps/demo2`) shows `@kafitra/lynx-device-info` in action — fetches brand, model, manufacturer, OS, API level, and device ID from the native layer and renders them in a card UI.
+> **The demo app** (`apps/demo2`) shows `@kafitra/lynx-device-info` and `@kafitra/lynx-storage` in action — device info, persistent session storage with login flow, and hot reload.
 
 > **Hot reload** works out-of-the-box via ETag polling: `MainActivity` polls the bundle URL every 1.5 s and calls `renderTemplateUrl` whenever rspeedy rebuilds.
+
+## Using @kafitra/lynx-storage
+
+### Install
+
+```bash
+npm install @kafitra/lynx-storage
+# or
+pnpm add @kafitra/lynx-storage
+```
+
+### Android Setup (Auto-linking)
+
+```bash
+npx @kafitra/lynx-cli link
+```
+
+Then in your `Application` class:
+
+```java
+LynxEnv.inst().init(this, null, null, null);
+LynxAutolinkRegistry.registerAll();
+```
+
+### iOS Setup
+
+```objc
+#import "LynxStorageModule.h"
+[globalConfig registerModule:LynxStorageModule.class];
+```
+
+### Usage
+
+```ts
+import { LynxStorage } from "@kafitra/lynx-storage";
+
+// Read
+const value = LynxStorage.getString("token"); // string | null
+
+// Write
+LynxStorage.setString("token", "abc123");
+
+// Delete
+LynxStorage.remove("token");
+
+// Clear all
+LynxStorage.clear();
+
+// All keys
+const keys = JSON.parse(LynxStorage.getAllKeys()); // string[]
+```
+
+> **Tip:** For a Promise-based API, install [`@kafitra/lynx-async-storage`](https://www.npmjs.com/package/@kafitra/lynx-async-storage) alongside — it auto-detects and wraps `LynxStorage` as its backend.
 
 ## Using @kafitra/lynx-device-info
 
@@ -162,10 +227,6 @@ Here is the list of planned native modules for future development:
     <tr>
       <td><code>@kafitra/lynx-app-info</code></td>
       <td>App version, package name, first install time, build number</td>
-    </tr>
-    <tr>
-      <td><code>@kafitra/lynx-async-storage</code></td>
-      <td>Persistent key-value storage (SharedPreferences)</td>
     </tr>
     <tr>
       <td><code>@kafitra/lynx-clipboard</code></td>
