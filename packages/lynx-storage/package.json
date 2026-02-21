@@ -1,0 +1,43 @@
+{
+  "name": "@kafitra/lynx-storage",
+  "version": "0.1.0",
+  "description": "Lynx Native Module for persistent key-value storage (Android SharedPreferences + iOS NSUserDefaults)",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "android",
+    "ios",
+    "lynx.module.json"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "clean": "rimraf dist",
+    "prepublishOnly": "npm run build"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.0",
+    "rimraf": "^5.0.0"
+  },
+  "keywords": [
+    "lynx",
+    "native-module",
+    "storage",
+    "async-storage",
+    "android",
+    "ios"
+  ],
+  "author": "Kafitra",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kafitramarna/kafitra-lynx-native.git",
+    "directory": "packages/lynx-storage"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
