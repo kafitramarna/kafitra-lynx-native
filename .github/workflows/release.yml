@@ -1,0 +1,110 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  # ── Check which packages have a new version ─────────────────────────────────
+  detect:
+    runs-on: ubuntu-latest
+    outputs:
+      cli_version: ${{ steps.cli.outputs.version }}
+      cli_changed: ${{ steps.cli.outputs.changed }}
+      device_info_version: ${{ steps.device_info.outputs.version }}
+      device_info_changed: ${{ steps.device_info.outputs.changed }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check lynx-cli version
+        id: cli
+        run: |
+          VERSION=$(node -p "require('./packages/lynx-cli/package.json').version")
+          TAG="lynx-cli@$VERSION"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Check lynx-device-info version
+        id: device_info
+        run: |
+          VERSION=$(node -p "require('./packages/lynx-device-info/package.json').version")
+          TAG="lynx-device-info@$VERSION"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
+  # ── Release lynx-cli ─────────────────────────────────────────────────────────
+  release-cli:
+    needs: detect
+    if: needs.detect.outputs.cli_changed == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract changelog section
+        id: changelog
+        run: |
+          VERSION="${{ needs.detect.outputs.cli_version }}"
+          CONTENT=$(awk "/^## \[$VERSION\]/{found=1; next} found && /^## \[/{exit} found{print}" packages/lynx-cli/CHANGELOG.md)
+          echo "content<<EOF" >> $GITHUB_OUTPUT
+          echo "$CONTENT" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Create tag
+        run: |
+          git tag "lynx-cli@${{ needs.detect.outputs.cli_version }}"
+          git push origin "lynx-cli@${{ needs.detect.outputs.cli_version }}"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: lynx-cli@${{ needs.detect.outputs.cli_version }}
+          name: "@kafitra/lynx-cli v${{ needs.detect.outputs.cli_version }}"
+          body: ${{ steps.changelog.outputs.content }}
+          draft: false
+          prerelease: false
+
+  # ── Release lynx-device-info ─────────────────────────────────────────────────
+  release-device-info:
+    needs: detect
+    if: needs.detect.outputs.device_info_changed == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract changelog section
+        id: changelog
+        run: |
+          VERSION="${{ needs.detect.outputs.device_info_version }}"
+          CONTENT=$(awk "/^## \[$VERSION\]/{found=1; next} found && /^## \[/{exit} found{print}" packages/lynx-device-info/CHANGELOG.md)
+          echo "content<<EOF" >> $GITHUB_OUTPUT
+          echo "$CONTENT" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Create tag
+        run: |
+          git tag "lynx-device-info@${{ needs.detect.outputs.device_info_version }}"
+          git push origin "lynx-device-info@${{ needs.detect.outputs.device_info_version }}"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: lynx-device-info@${{ needs.detect.outputs.device_info_version }}
+          name: "@kafitra/lynx-device-info v${{ needs.detect.outputs.device_info_version }}"
+          body: ${{ steps.changelog.outputs.content }}
+          draft: false
+          prerelease: false
