@@ -15,9 +15,12 @@
     "doctor": "lynx doctor"
   },
   "dependencies": {
+    "@kafitra/lynx-async-storage": "workspace:*",
     "@kafitra/lynx-cli": "workspace:*",
     "@kafitra/lynx-device-info": "workspace:*",
-    "@lynx-js/react": "^0.116.2"
+    "@kafitra/lynx-storage": "workspace:*",
+    "@lynx-js/react": "^0.116.2",
+    "react-router": "6"
   },
   "devDependencies": {
     "@biomejs/biome": "2.2.3",
