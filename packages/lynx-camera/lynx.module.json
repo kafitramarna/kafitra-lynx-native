@@ -1,0 +1,11 @@
+{
+  "name": "LynxCamera",
+  "android": {
+    "componentClass": "com.kafitra.lynxcamera.LynxCameraView",
+    "componentTag": "camera",
+    "sourceDir": "android",
+    "permissions": [
+      "android.permission.CAMERA"
+    ]
+  }
+}
