@@ -1,6 +1,6 @@
 {
   "name": "@kafitra/lynx-cli",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Developer workflow CLI for Lynx Native Modules — autolink, run, prebuild, dev, doctor",
   "type": "module",
   "bin": {

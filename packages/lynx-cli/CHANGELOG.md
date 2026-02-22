@@ -2,6 +2,49 @@
 
 All notable changes to `@kafitra/lynx-cli` will be documented in this file.
 
+## [0.2.2] — 2026-02-22
+
+### Added
+
+- **`link` — AndroidManifest permission injection (Step 6)** — `lynx link` now calls
+  `injectManifestPermissions()` from `@kafitra/lynx-autolink` as a new step after `app/build.gradle`
+  injection. Any `permissions` declared in linked packages' `lynx.module.json` are idempotently
+  written into `AndroidManifest.xml` between `<!-- lynx-autolink-permissions-start/end -->` markers.
+
+- **`link` summary — `[perms: ...]` annotation** — The linked-modules summary now appends
+  `[perms: <permission>, ...]` for modules that declare Android permissions, making the injection
+  result visible at a glance.
+
+- **`prebuild` template — AndroidManifest permission marker block** — The generated
+  `AndroidManifest.xml` now includes an empty `<!-- lynx-autolink-permissions-start/end -->` block
+  so that `lynx link` (which runs automatically after prebuild) can inject permissions without
+  needing to locate the `<application>` tag on first run.
+
+### Fixed
+
+- **`prebuild` template: `MainActivity extends AppCompatActivity`** — Generated `MainActivity.java`
+  now extends `AppCompatActivity` (via `androidx.appcompat`) instead of plain `Activity`. CameraX
+  `bindToLifecycle()` requires a `LifecycleOwner`; plain `Activity` does not implement that interface,
+  causing a `Host Activity must extend AppCompatActivity` runtime error. `androidx.appcompat:appcompat:1.6.1`
+  added as a dependency in the `app/build.gradle` template.
+
+- **`prebuild` template: missing `addUIBehaviorsTo` call** — Generated `MainActivity.java` now calls
+  `LynxAutolinkRegistry.addUIBehaviorsTo(viewBuilder)` before `LynxViewBuilder.build()`. Previously,
+  native UI custom elements (e.g. `<camera>`) were never registered in a freshly prebuild project,
+  causing them to silently not render.
+
+- **`link` logger: `→ undefined` for UI-only modules** — The summary log now correctly displays
+  `[UI] <componentClass> <<componentTag>>` when a module only provides `componentClass` (not
+  `moduleClass`). Previously it logged `→ undefined`.
+
+- **`prebuild` template: Kotlin stdlib duplicate class on fresh build** — Root `build.gradle` now
+  includes a `subprojects { configurations.all { resolutionStrategy { force … } } }` block that
+  pins `kotlin-stdlib`, `kotlin-stdlib-jdk7`, and `kotlin-stdlib-jdk8` to 1.8.22. Without this,
+  Lynx + CameraX transitive dependencies pull two incompatible Kotlin stdlib versions, causing a
+  `Duplicate class kotlin.internal.jdk7.JDK7PlatformImplementations` build failure.
+
+---
+
 ## [0.2.1] — 2026-02-21
 
 ### Added
