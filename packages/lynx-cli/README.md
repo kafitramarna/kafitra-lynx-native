@@ -105,11 +105,15 @@ Auto-runs `lynx link` after generation to wire up any installed modules.
 
 > **Note:** `gradle-wrapper.jar` is auto-downloaded from GitHub if missing — no manual step needed.
 
+> **Note:** Generated `MainActivity` extends `AppCompatActivity` — required for CameraX lifecycle
+> binding and runtime permission dialogs.
+
 ---
 
 ### `lynx link`
 
-Scan `node_modules`, generate `LynxAutolinkRegistry.java`, and patch `settings.gradle` + `app/build.gradle`.
+Scan `node_modules`, generate `LynxAutolinkRegistry.java`, and patch `settings.gradle`,
+`app/build.gradle`, and `AndroidManifest.xml`.
 
 ```bash
 npx @kafitra/lynx-cli link [options]
@@ -122,6 +126,14 @@ npx @kafitra/lynx-cli link [options]
 | `--java-package <name>` | inferred from `applicationId` | Java package for the registry class                   |
 
 All patch operations are **idempotent** — running the command twice produces the same result.
+
+**Steps performed:**
+
+1. Scan `node_modules` for `lynx.module.json` packages
+2. Generate `LynxAutolinkRegistry.java`
+3. Inject `settings.gradle` project includes
+4. Inject `app/build.gradle` dependencies
+5. Inject `AndroidManifest.xml` `<uses-permission>` entries (from each module's `permissions` field)
 
 **One-time Application class setup:**
 
