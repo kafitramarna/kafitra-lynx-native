@@ -1,0 +1,12 @@
+# Android Gradle build artifacts — not needed at runtime
+android/build/
+android/.gradle/
+
+# iOS Xcode build products
+ios/build/
+ios/DerivedData/
+*.xcworkspace/
+*.xcuserstate
+
+# TypeScript build cache
+*.tsbuildinfo

@@ -1,6 +1,6 @@
 # @kafitra/lynx-camera
 
-[![Version](https://img.shields.io/badge/version-0.1.0-blue)](./package.json)
+[![Version](https://img.shields.io/badge/version-0.1.1-blue)](./package.json)
 [![Platform](https://img.shields.io/badge/platform-Android%20%7C%20iOS-lightgrey)](#)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow)](./package.json)
 
@@ -10,7 +10,7 @@ Powered by **CameraX** on Android and **AVFoundation** on iOS. Implements the `<
 
 ---
 
-## Features (v0.1.0)
+## Features (v0.1.1)
 
 | Feature                   | Android                                    | iOS                                |
 | ------------------------- | ------------------------------------------ | ---------------------------------- |
@@ -32,6 +32,47 @@ Powered by **CameraX** on Android and **AVFoundation** on iOS. Implements the `<
 ```bash
 pnpm add @kafitra/lynx-camera
 ```
+
+### Rspeedy build alias (required)
+
+`@kafitra/lynx-camera` ships its TypeScript source in `src/`. Lynx's bundler
+(`pluginReactLynx`) **must process the source files** to generate the background-thread
+snapshot registration for the `<camera>` custom element. Without this, the camera view
+renders as a black screen.
+
+Add the following alias to your `lynx.config.ts`:
+
+```ts
+import { createRequire } from "node:module";
+import { defineConfig } from "@lynx-js/rspeedy";
+import { pluginReactLynx } from "@lynx-js/react-rsbuild-plugin";
+
+const require = createRequire(import.meta.url);
+
+export default defineConfig({
+  resolve: {
+    alias: {
+      // Point rspeedy to the TypeScript source so pluginReactLynx can
+      // generate the Lynx snapshot for the <camera> custom element.
+      "@kafitra/lynx-camera": require.resolve("@kafitra/lynx-camera/src"),
+    },
+  },
+  tools: {
+    rspack: {
+      resolve: {
+        extensionAlias: { ".js": [".ts", ".tsx", ".js"] },
+      },
+    },
+  },
+  plugins: [pluginReactLynx(/* ... */)],
+});
+```
+
+> **Monorepo users**: alias to your local workspace source instead:
+>
+> ```ts
+> '@kafitra/lynx-camera': path.resolve(__dirname, '../../packages/lynx-camera/src/index.ts'),
+> ```
 
 ### Android — Permissions
 
@@ -250,7 +291,7 @@ Recommended test matrix:
 
 ---
 
-## Known Limitations (v0.1.0)
+## Known Limitations (v0.1.1)
 
 - Android `PhotoResult.width` and `PhotoResult.height` return `0`. Exact dimensions
   are retrievable by decoding the saved JPEG via `BitmapFactory.decodeFile`.
