@@ -35,10 +35,14 @@ android {
 }
 
 dependencies {
-    implementation project(':lynx-device-info')
     implementation project(':lynx-storage')
+    implementation project(':lynx-device-info')
+    implementation project(':lynx-camera')
     // lynx-autolink-start
     // lynx-autolink-end
+
+    // AndroidX
+    implementation "androidx.appcompat:appcompat:1.6.1"
 
     // Lynx core
     implementation "org.lynxsdk.lynx:lynx:3.6.0"

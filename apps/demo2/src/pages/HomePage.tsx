@@ -69,6 +69,11 @@ export function HomePage() {
             <text className="MenuItemText">📱 Info Perangkat</text>
             <text className="MenuArrow">›</text>
           </view>
+          <view className="MenuItemDivider" />
+          <view className="MenuItem" bindtap={() => navigate('/camera')}>
+            <text className="MenuItemText">📷 Kamera</text>
+            <text className="MenuArrow">›</text>
+          </view>
         </view>
 
         <view style={{ flex: 1 }} />

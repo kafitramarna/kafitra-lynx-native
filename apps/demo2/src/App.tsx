@@ -4,6 +4,7 @@ import { MemoryRouter, Routes, Route } from 'react-router';
 import './App.css';
 
 import AsyncStorage from '@kafitra/lynx-async-storage';
+import { CameraPage } from './pages/CameraPage';
 import { LoginPage } from './pages/LoginPage';
 import { HomePage } from './pages/HomePage';
 import { ProfilePage } from './pages/ProfilePage';
@@ -34,6 +35,7 @@ export function App() {
         <Route path="/home" element={<HomePage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/device-info" element={<DeviceInfoPage />} />
+        <Route path="/camera" element={<CameraPage />} />
       </Routes>
     </MemoryRouter>
   );

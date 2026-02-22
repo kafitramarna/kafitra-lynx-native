@@ -1,6 +1,6 @@
 package com.kafitra.demo2;
 
-import android.app.Activity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class MainActivity extends Activity {
+public class MainActivity extends AppCompatActivity {
 
     private LynxView mLynxView;
     private final Handler mMainHandler = new Handler(Looper.getMainLooper());
@@ -43,6 +43,7 @@ public class MainActivity extends Activity {
         LynxViewBuilder viewBuilder = new LynxViewBuilder();
         viewBuilder.setTemplateProvider(new LynxTemplateProvider(this));
         viewBuilder.addBehaviors(new XElementBehaviors().create());
+        LynxAutolinkRegistry.addUIBehaviorsTo(viewBuilder);
         return viewBuilder.build(this);
     }
 
