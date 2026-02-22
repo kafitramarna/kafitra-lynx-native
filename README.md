@@ -39,7 +39,7 @@
     </tr>
     <tr>
       <td><a href="./packages/lynx-camera"><code>@kafitra/lynx-camera</code></a></td>
-      <td><code>0.1.0</code></td>
+      <td><code>0.1.2</code></td>
       <td>Native camera preview and capture UI component — CameraX (Android) + AVFoundation (iOS)</td>
     </tr>
     <tr>

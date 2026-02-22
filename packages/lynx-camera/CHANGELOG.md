@@ -2,6 +2,17 @@
 
 All notable changes to `@kafitra/lynx-camera` will be documented in this file.
 
+## [0.1.2] — 2026-02-22
+
+### Fixed
+
+- **`ERR_PACKAGE_PATH_NOT_EXPORTED`** when using `require.resolve('@kafitra/lynx-camera/package.json')`.
+  Added `"./package.json": "./package.json"` to `exports` map.
+  Simplified recommended alias to `require.resolve('@kafitra/lynx-camera/src')` —
+  no need for `path.dirname` + manual `src/index.ts` concatenation.
+
+---
+
 ## [0.1.1] — 2026-02-22
 
 ### Added

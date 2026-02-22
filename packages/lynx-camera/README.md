@@ -1,6 +1,6 @@
 # @kafitra/lynx-camera
 
-[![Version](https://img.shields.io/badge/version-0.1.1-blue)](./package.json)
+[![Version](https://img.shields.io/badge/version-0.1.2-blue)](./package.json)
 [![Platform](https://img.shields.io/badge/platform-Android%20%7C%20iOS-lightgrey)](#)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow)](./package.json)
 
