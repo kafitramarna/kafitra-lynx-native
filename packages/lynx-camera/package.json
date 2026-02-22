@@ -1,6 +1,6 @@
 {
   "name": "@kafitra/lynx-camera",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Native Camera UI component for Lynx — CameraX (Android) + AVFoundation (iOS)",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
