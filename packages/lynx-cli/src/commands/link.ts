@@ -5,6 +5,7 @@ import {
   writeJavaRegistry,
   injectSettings,
   injectBuildGradle,
+  injectManifestPermissions,
   readApplicationId,
 } from "@kafitra/lynx-autolink";
 import * as log from "../utils/logger.js";
@@ -117,14 +118,38 @@ export async function runLink(opts: LinkOptions = {}): Promise<void> {
     log.error(`build.gradle injection failed: ${(err as Error).message}`);
     process.exit(1);
   }
-
+  // ── Step 6: Inject AndroidManifest.xml permissions ─────────────────────
+  const manifestFile = path.join(
+    androidAppDir,
+    "src",
+    "main",
+    "AndroidManifest.xml",
+  );
+  if (fs.existsSync(manifestFile)) {
+    log.step("Injecting AndroidManifest.xml permissions…");
+    try {
+      injectManifestPermissions(manifestFile, modules);
+      log.success("Updated: android/app/src/main/AndroidManifest.xml");
+    } catch (err) {
+      log.warn(`AndroidManifest.xml injection failed: ${(err as Error).message}`);
+    }
+  }
   // ── Summary ───────────────────────────────────────────────────────────────
   log.blank();
   log.header("✔ Linking complete");
   log.blank();
   log.info("Linked modules:");
   for (const mod of modules) {
-    log.info(`  • ${mod.name}  →  ${mod.android.moduleClass}`);
+    const clsLabel = mod.android.moduleClass
+      ? mod.android.moduleClass
+      : mod.android.componentClass
+        ? `[UI] ${mod.android.componentClass} <${mod.android.componentTag}>`
+        : "(unknown)";
+    const permLabel =
+      mod.android.permissions && mod.android.permissions.length > 0
+        ? `  [perms: ${mod.android.permissions.join(", ")}]`
+        : "";
+    log.info(`  • ${mod.name}  →  ${clsLabel}${permLabel}`);
   }
   log.blank();
   log.info(`In your Application class, call:`);
