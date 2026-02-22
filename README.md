@@ -44,8 +44,8 @@
     </tr>
     <tr>
       <td><a href="./packages/lynx-autolink"><code>@kafitra/lynx-autolink</code></a></td>
-      <td><code>0.1.0</code></td>
-      <td>Auto-linking library — scanner, Java registry generator, Gradle injector</td>
+      <td><code>0.1.1</code></td>
+      <td>Auto-linking library — scanner, Java registry generator, Gradle injector, manifest permissions</td>
     </tr>
     <tr>
       <td><a href="./packages/lynx-cli"><code>@kafitra/lynx-cli</code></a></td>
@@ -82,7 +82,7 @@ kafitra-lynx-native/
 │   │   ├── lynx.module.json     # Auto-link metadata
 │   │   └── dist/                # Compiled output
 │   ├── lynx-autolink/           # Auto-linking core library
-│   │   └── src/                 # scanner, generator, injectors
+│   │   └── src/                 # scanner, generator, injectors, manifest
 │   └── lynx-cli/                # CLI (lynx link, run, prebuild, dev, doctor)
 │       └── src/
 ├── apps/                        # Example & demo applications
@@ -144,32 +144,40 @@ pnpm add @kafitra/lynx-camera
 
 ### Android Setup
 
-Add to `android/app/src/main/AndroidManifest.xml`:
+Your `Activity` must extend `AppCompatActivity` (required by CameraX):
+
+```java
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity { ... }
+```
+
+Add to `app/build.gradle`:
+
+```groovy
+implementation 'androidx.appcompat:appcompat:1.6.1'
+```
+
+If using `@kafitra/lynx-autolink` (>= 0.1.1), run `npx @kafitra/lynx-cli link` — the `CAMERA` permission is injected into `AndroidManifest.xml` automatically. Otherwise add it manually:
 
 ```xml
 <uses-permission android:name="android.permission.CAMERA" />
 ```
 
-If you are using `@kafitra/lynx-autolink`, run:
-
-```bash
-npx @kafitra/lynx-cli link
-```
-
-Then call both registry methods in your `Activity` (must extend `AppCompatActivity`):
+Register the UI component in your `Activity`:
 
 ```java
-LynxAutolinkRegistry.registerAll();              // native modules
-LynxAutolinkRegistry.addUIBehaviorsTo(builder);  // native UI elements (camera)
+LynxAutolinkRegistry.registerAll();             // native modules
+LynxAutolinkRegistry.addUIBehaviorsTo(builder); // native UI elements (camera)
 ```
 
-> The OS permission dialog is shown **automatically** the first time `<CameraView>` is rendered — no manual `requestPermissions` call needed.
+> The OS permission dialog is shown **automatically** when `<CameraView>` is first rendered — no manual `requestPermissions` call needed.
 
 ### Usage
 
 ```tsx
-import { CameraView, type CameraRef } from '@kafitra/lynx-camera';
-import { useRef } from '@lynx-js/react';
+import { CameraView, type CameraRef } from "@kafitra/lynx-camera";
+import { useRef } from "@lynx-js/react";
 
 export function CameraScreen() {
   const cam = useRef<CameraRef>(null);
@@ -181,10 +189,10 @@ export function CameraScreen() {
       flashMode="auto"
       focusMode="continuous"
       zoom={1}
-      onCameraReady={() => console.log('ready')}
+      onCameraReady={() => console.log("ready")}
       onError={(e) => console.error(e.detail.code, e.detail.message)}
       onZoomChanged={(e) => console.log(e.detail.zoom)}
-      onPhotoCaptured={(e) => console.log('saved to', e.detail.uri)}
+      onPhotoCaptured={(e) => console.log("saved to", e.detail.uri)}
     />
   );
 }
@@ -192,29 +200,29 @@ export function CameraScreen() {
 // Imperative API
 const photo = await cam.current?.takePhoto();
 await cam.current?.switchCamera();
-await cam.current?.setFlash({ mode: 'torch' });
+await cam.current?.setFlash({ mode: "torch" });
 await cam.current?.setZoom({ level: 2.0 });
 await cam.current?.focus({ x: 0.5, y: 0.5 });
 ```
 
 ### Props
 
-| Prop | Type | Default | Description |
-|---|---|---|---|
-| `device` | `"front"\|"back"` | `"back"` | Which camera to use |
-| `flashMode` | `"auto"\|"on"\|"off"\|"torch"` | `"auto"` | Flash / torch mode |
-| `focusMode` | `"auto"\|"tap"\|"continuous"` | `"continuous"` | Autofocus strategy |
-| `zoom` | `number` | `1` | Zoom ratio (clamped to device min/max) |
+| Prop        | Type                           | Default        | Description                            |
+| ----------- | ------------------------------ | -------------- | -------------------------------------- |
+| `device`    | `"front"\|"back"`              | `"back"`       | Which camera to use                    |
+| `flashMode` | `"auto"\|"on"\|"off"\|"torch"` | `"auto"`       | Flash / torch mode                     |
+| `focusMode` | `"auto"\|"tap"\|"continuous"`  | `"continuous"` | Autofocus strategy                     |
+| `zoom`      | `number`                       | `1`            | Zoom ratio (clamped to device min/max) |
 
 ### Events
 
-| Event | Payload | Description |
-|---|---|---|
-| `onCameraReady` | — | Camera session started and preview is live |
-| `onError` | `{ code, message }` | Camera error (e.g. `PERMISSION_DENIED`, `SESSION_ERROR`) |
-| `onZoomChanged` | `{ zoom, minZoom, maxZoom }` | Fired when zoom changes |
-| `onTapFocus` | `{ x, y }` | Fired when user taps to focus (focusMode=`"tap"`) |
-| `onPhotoCaptured` | `{ uri, width, height }` | Fired after `takePhoto()` completes |
+| Event             | Payload                      | Description                                              |
+| ----------------- | ---------------------------- | -------------------------------------------------------- |
+| `onCameraReady`   | —                            | Camera session started and preview is live               |
+| `onError`         | `{ code, message }`          | Camera error (e.g. `PERMISSION_DENIED`, `SESSION_ERROR`) |
+| `onZoomChanged`   | `{ zoom, minZoom, maxZoom }` | Fired when zoom changes                                  |
+| `onTapFocus`      | `{ x, y }`                   | Fired when user taps to focus (focusMode=`"tap"`)        |
+| `onPhotoCaptured` | `{ uri, width, height }`     | Fired after `takePhoto()` completes                      |
 
 ---
 
@@ -429,19 +437,21 @@ npx @kafitra/lynx-cli link --java-package com.example.myapp
 
 ### What `lynx link` does
 
-| Step | Action                                                                             |
-| ---- | ---------------------------------------------------------------------------------- |
-| 1    | Scans `node_modules` (including hoisted monorepo locations) for `lynx.module.json` |
-| 2    | Generates `android/app/src/main/java/<pkg>/LynxAutolinkRegistry.java`              |
-| 3    | Injects `include ':module-name'` entries into `android/settings.gradle`            |
-| 4    | Injects `implementation project(':module-name')` into `android/app/build.gradle`   |
+| Step | Action                                                                              |
+| ---- | ----------------------------------------------------------------------------------- |
+| 1    | Scans `node_modules` (including hoisted monorepo locations) for `lynx.module.json`  |
+| 2    | Generates `android/app/src/main/java/<pkg>/LynxAutolinkRegistry.java`               |
+| 3    | Injects `include ':module-name'` entries into `android/settings.gradle`             |
+| 4    | Injects `implementation project(':module-name')` into `android/app/build.gradle`    |
+| 5    | Injects `<uses-permission>` entries into `android/app/src/main/AndroidManifest.xml` |
 
 ### Example output
 
 ```
 →  Scanning for Lynx Native Modules…
-ℹ  Found 1 module(s):
+ℹ  Found 2 module(s):
 ℹ    • @kafitra/lynx-device-info  (LynxDeviceInfo)
+ℹ    • @kafitra/lynx-camera       (LynxCamera)
 
 →  Generating LynxAutolinkRegistry.java…
 ✔  Generated: android/app/src/main/java/com/example/app/LynxAutolinkRegistry.java
@@ -449,11 +459,14 @@ npx @kafitra/lynx-cli link --java-package com.example.myapp
 ✔  Updated: android/settings.gradle
 →  Injecting app/build.gradle dependencies…
 ✔  Updated: android/app/build.gradle
+→  Injecting AndroidManifest.xml permissions…
+✔  Updated: android/app/src/main/AndroidManifest.xml  [perms: android.permission.CAMERA]
 
 ✔ Linking complete
 
-ℹ  In your Application class, call:
+ℹ  In your Activity, call:
 ℹ    LynxAutolinkRegistry.registerAll();
+ℹ    LynxAutolinkRegistry.addUIBehaviorsTo(builder); // for native UI components
 ```
 
 ### Metadata file (`lynx.module.json`)
@@ -470,12 +483,17 @@ Place this file at the **root** of each native module package (next to `package.
 }
 ```
 
-| Field                       | Required | Description                                                     |
-| --------------------------- | -------- | --------------------------------------------------------------- |
-| `name`                      | ✅       | Module name as registered with `LynxEnv`                        |
-| `android.moduleClass`       | ✅       | Fully-qualified Java class name                                 |
-| `android.sourceDir`         | ✅       | Relative path to the Android library source (e.g. `"android"`)  |
-| `android.gradleProjectName` | optional | Override Gradle project name (defaults to kebab-cased npm name) |
+| Field                       | Required                 | Description                                                                   |
+| --------------------------- | ------------------------ | ----------------------------------------------------------------------------- |
+| `name`                      | ✅                       | Module name as registered with `LynxEnv`                                      |
+| `android.moduleClass`       | ✅¹                      | Fully-qualified Java class name of the `LynxModule` implementation            |
+| `android.componentClass`    | ✅¹                      | Fully-qualified Java class name of the `LynxUI` custom element                |
+| `android.componentTag`      | ✅ when `componentClass` | JSX element tag (e.g. `"camera"`). Required when `componentClass` is present  |
+| `android.sourceDir`         | ✅                       | Relative path to the Android library source (e.g. `"android"`)                |
+| `android.gradleProjectName` | optional                 | Override Gradle project name (defaults to kebab-cased npm name)               |
+| `android.permissions`       | optional                 | Android permissions — auto-injected into `AndroidManifest.xml` by `lynx link` |
+
+> ¹ At least one of `moduleClass` or `componentClass` must be provided.
 
 ### Troubleshooting
 
