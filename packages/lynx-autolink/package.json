@@ -1,6 +1,6 @@
 {
   "name": "@kafitra/lynx-autolink",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Auto-linking library for Lynx Native Modules — scans node_modules, generates Java registry, injects Gradle wiring",
   "type": "module",
   "main": "dist/index.js",

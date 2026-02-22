@@ -8,3 +8,4 @@ export {
 } from "./java-generator.js";
 export { injectSettings } from "./gradle-settings.js";
 export { injectBuildGradle } from "./gradle-build.js";
+export { injectManifestPermissions } from "./manifest.js";
