@@ -1,0 +1,53 @@
+{
+  "name": "@kafitra/lynx-camera",
+  "version": "0.1.0",
+  "description": "Native Camera UI component for Lynx — CameraX (Android) + AVFoundation (iOS)",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "android",
+    "ios",
+    "lynx.module.json"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "clean": "rimraf dist",
+    "prepublishOnly": "pnpm run build"
+  },
+  "keywords": [
+    "lynx",
+    "camera",
+    "native",
+    "camerax",
+    "avfoundation",
+    "react-lynx"
+  ],
+  "author": "kafitra",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "peerDependencies": {
+    "@lynx-js/react": "*"
+  },
+  "peerDependenciesMeta": {
+    "@lynx-js/react": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@lynx-js/react": "^0.116.2",
+    "@lynx-js/types": "^3.6.0",
+    "rimraf": "^5.0.0",
+    "typescript": "^5.3.0"
+  }
+}
