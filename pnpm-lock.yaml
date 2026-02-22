@@ -60,6 +60,9 @@ importers:
       '@kafitra/lynx-async-storage':
         specifier: workspace:*
         version: link:../../packages/lynx-async-storage
+      '@kafitra/lynx-camera':
+        specifier: workspace:*
+        version: link:../../packages/lynx-camera
       '@kafitra/lynx-cli':
         specifier: workspace:*
         version: link:../../packages/lynx-cli
@@ -157,6 +160,21 @@ importers:
       '@types/node':
         specifier: ^20.0.0
         version: 20.19.33
+      typescript:
+        specifier: ^5.3.0
+        version: 5.9.3
+
+  packages/lynx-camera:
+    devDependencies:
+      '@lynx-js/react':
+        specifier: ^0.116.2
+        version: 0.116.2(@lynx-js/types@3.6.0)(@types/react@18.3.28)
+      '@lynx-js/types':
+        specifier: ^3.6.0
+        version: 3.6.0
+      rimraf:
+        specifier: ^5.0.0
+        version: 5.0.10
       typescript:
         specifier: ^5.3.0
         version: 5.9.3

@@ -2,6 +2,7 @@ package com.kafitra.demo2;
 
 import com.lynx.tasm.LynxEnv;
 
+import com.kafitra.lynxcamera.LynxCameraView;
 import com.kafitra.lynxdeviceinfo.LynxDeviceInfoModule;
 import com.kafitra.lynxstorage.LynxStorageModule;
 
@@ -20,5 +21,18 @@ public class LynxAutolinkRegistry {
             "LynxStorage",
             LynxStorageModule.class
         );
+    }
+    /**
+     * Register all native UI components with a LynxViewBuilder.
+     * Call this in your Activity after creating the LynxViewBuilder,
+     * before calling LynxViewBuilder.build().
+     */
+    public static void addUIBehaviorsTo(com.lynx.tasm.LynxViewBuilder builder) {
+        builder.addBehavior(new com.lynx.tasm.behavior.Behavior("camera") {
+            @Override
+            public com.lynx.tasm.behavior.ui.LynxUI createUI(com.lynx.tasm.behavior.LynxContext context) {
+                return new LynxCameraView(context);
+            }
+        });
     }
 }

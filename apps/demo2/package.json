@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@kafitra/lynx-async-storage": "workspace:*",
+    "@kafitra/lynx-camera": "workspace:*",
     "@kafitra/lynx-cli": "workspace:*",
     "@kafitra/lynx-device-info": "workspace:*",
     "@kafitra/lynx-storage": "workspace:*",
