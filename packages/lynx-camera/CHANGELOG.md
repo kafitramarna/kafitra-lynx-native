@@ -2,6 +2,48 @@
 
 All notable changes to `@kafitra/lynx-camera` will be documented in this file.
 
+## [0.1.1] — 2026-02-22
+
+### Added
+
+- **Ship TypeScript source** (`src/`) in the npm package — added to `"files"` field.
+- **`./src` export** in `package.json` for bundler alias support:
+  ```json
+  { "./src": "./src/index.ts" }
+  ```
+- **`./package.json` export** in `package.json` — prevents `ERR_PACKAGE_PATH_NOT_EXPORTED`
+  for tooling that resolves `package.json` via `exports`:
+  ```json
+  { "./package.json": "./package.json" }
+  ```
+- **`lynx.config.ts` build alias** requirement documented in README.
+  - Lynx's `pluginReactLynx` must process the TypeScript source to generate the
+    background-thread snapshot for the `<camera>` custom element. Without this alias,
+    the camera renders as a black screen (error: `BackgroundSnapshot not found: camera`).
+  - Standalone (non-monorepo) usage — use the `./src` export directly:
+
+    ```ts
+    import { createRequire } from "node:module";
+    const require = createRequire(import.meta.url);
+
+    // in defineConfig:
+    alias: {
+      "@kafitra/lynx-camera": require.resolve("@kafitra/lynx-camera/src"),
+    }
+    ```
+
+### Fixed
+
+- **Black camera screen** in projects that import `@kafitra/lynx-camera` from npm (without a
+  monorepo source alias). The published `dist/` JS was compiled by `tsc` without
+  `pluginReactLynx`, so no Lynx snapshot was generated for the `<camera>` element.
+- **`ERR_PACKAGE_PATH_NOT_EXPORTED`** — previously documented alias used
+  `require.resolve('@kafitra/lynx-camera/package.json')` which threw this error because
+  `./package.json` was not listed in `exports`. Fixed by adding `"./package.json"` to
+  `exports` **and** simplifying the alias to `require.resolve('@kafitra/lynx-camera/src')`.
+
+---
+
 ## [0.1.0] — 2026-02-22
 
 ### Added
