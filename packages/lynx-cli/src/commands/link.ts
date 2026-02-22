@@ -131,7 +131,9 @@ export async function runLink(opts: LinkOptions = {}): Promise<void> {
       injectManifestPermissions(manifestFile, modules);
       log.success("Updated: android/app/src/main/AndroidManifest.xml");
     } catch (err) {
-      log.warn(`AndroidManifest.xml injection failed: ${(err as Error).message}`);
+      log.warn(
+        `AndroidManifest.xml injection failed: ${(err as Error).message}`,
+      );
     }
   }
   // ── Summary ───────────────────────────────────────────────────────────────
