@@ -117,3 +117,291 @@ text {
   margin: 5px;
   color: rgba(255, 255, 255, 0.65);
 }
+
+/* ─────────────────────────────────────────────
+   Shared Page Shell
+───────────────────────────────────────────── */
+
+.Page {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.Page--center {
+  align-items: center;
+  justify-content: center;
+}
+
+.LoadingText {
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* ─────────────────────────────────────────────
+   Login Page
+───────────────────────────────────────────── */
+
+.LoginCard {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 40px 28px 32px;
+  position: relative;
+  z-index: 10;
+}
+
+.LoginHeader {
+  margin-bottom: 36px;
+}
+
+.LoginTitle {
+  font-size: 34px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 6px;
+}
+
+.LoginSubtitle {
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.InputGroup {
+  margin-bottom: 18px;
+}
+
+.InputLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.65);
+  margin-bottom: 8px;
+}
+
+.TextInput {
+  width: 100%;
+  height: 50px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 0 16px;
+  font-size: 15px;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.ErrorText {
+  font-size: 13px;
+  color: #ff6b6b;
+  margin-bottom: 14px;
+  text-align: center;
+}
+
+.PrimaryButton {
+  height: 54px;
+  background: linear-gradient(135deg, #12e5e5 0%, #ff6448 100%);
+  border-radius: 16px;
+  align-items: center;
+  justify-content: center;
+  margin-top: 4px;
+  margin-bottom: 20px;
+}
+
+.PrimaryButtonText {
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.HintText {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.35);
+  text-align: center;
+}
+
+/* ─────────────────────────────────────────────
+   Shared Page Content Layout
+───────────────────────────────────────────── */
+
+.PageContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 56px 20px 32px;
+  position: relative;
+  z-index: 10;
+}
+
+.Card {
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 18px;
+  padding: 20px;
+  margin-bottom: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.CardLabel {
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.4);
+  letter-spacing: 1.2px;
+  margin-bottom: 8px;
+}
+
+.WelcomeText {
+  font-size: 26px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 6px;
+}
+
+.SubText {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* ─────────────────────────────────────────────
+   Menu List
+───────────────────────────────────────────── */
+
+.MenuList {
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+.MenuItem {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px;
+}
+
+.MenuItemText {
+  font-size: 15px;
+  color: #fff;
+}
+
+.MenuArrow {
+  font-size: 22px;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.MenuItemDivider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.07);
+  margin: 0 20px;
+}
+
+/* ─────────────────────────────────────────────
+   Danger / Logout Button
+───────────────────────────────────────────── */
+
+.DangerButton {
+  height: 52px;
+  background: rgba(255, 80, 80, 0.12);
+  border-radius: 16px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 80, 80, 0.3);
+}
+
+.DangerButtonText {
+  font-size: 15px;
+  font-weight: 600;
+  color: #ff6b6b;
+}
+
+/* ─────────────────────────────────────────────
+   Profile Page
+───────────────────────────────────────────── */
+
+.BackButton {
+  margin-bottom: 28px;
+}
+
+.BackButtonText {
+  font-size: 16px;
+  color: #12e5e5;
+}
+
+.AvatarWrap {
+  align-items: center;
+  margin-bottom: 28px;
+}
+
+.Avatar {
+  width: 88px;
+  height: 88px;
+  border-radius: 44px;
+  background: linear-gradient(135deg, #12e5e5 0%, #ff6448 100%);
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+
+.AvatarInitial {
+  font-size: 36px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.ProfileName {
+  font-size: 22px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 8px;
+}
+
+.StatusBadge {
+  background: rgba(74, 222, 128, 0.15);
+  border-radius: 20px;
+  padding: 4px 14px;
+  border: 1px solid rgba(74, 222, 128, 0.3);
+}
+
+.StatusText {
+  font-size: 12px;
+  color: #4ade80;
+  font-weight: 600;
+}
+
+.InfoCard {
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+
+.InfoRow {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+}
+
+.InfoRowDivider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.07);
+  margin: 0 20px;
+}
+
+.InfoLabel {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.InfoValue {
+  font-size: 14px;
+  color: #fff;
+  font-weight: 500;
+}
+
+.InfoValue--green {
+  color: #4ade80;
+}

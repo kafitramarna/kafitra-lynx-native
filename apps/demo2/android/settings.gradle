@@ -18,4 +18,6 @@ include ':app'
 // lynx-autolink-start
 include ':lynx-device-info'
 project(':lynx-device-info').projectDir = new File(rootDir, '../node_modules/@kafitra/lynx-device-info/android')
+include ':lynx-storage'
+project(':lynx-storage').projectDir = new File(rootDir, '../node_modules/@kafitra/lynx-storage/android')
 // lynx-autolink-end

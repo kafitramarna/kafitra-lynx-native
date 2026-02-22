@@ -1,56 +1,40 @@
-import { useCallback, useEffect, useState } from '@lynx-js/react';
+import { useEffect, useState } from '@lynx-js/react';
+import { MemoryRouter, Routes, Route } from 'react-router';
 
 import './App.css';
-import arrow from './assets/arrow.png';
-import lynxLogo from './assets/lynx-logo.png';
-import reactLynxLogo from './assets/react-logo.png';
 
-export function App(props: { onRender?: () => void }) {
-  const [alterLogo, setAlterLogo] = useState(false);
+import AsyncStorage from '@kafitra/lynx-async-storage';
+import { LoginPage } from './pages/LoginPage';
+import { HomePage } from './pages/HomePage';
+import { ProfilePage } from './pages/ProfilePage';
+import { DeviceInfoPage } from './pages/DeviceInfoPage';
+
+export function App() {
+  const [initialRoute, setInitialRoute] = useState<string | null>(null);
 
   useEffect(() => {
-    console.info('Hello, ReactLynx');
+    AsyncStorage.getItem('session').then((raw) => {
+      setInitialRoute(raw ? '/home' : '/');
+    });
   }, []);
-  props.onRender?.();
 
-  const onTap = useCallback(() => {
-    'background only';
-    setAlterLogo((prevAlterLogo) => !prevAlterLogo);
-  }, []);
+  if (!initialRoute) {
+    return (
+      <view className="Page Page--center">
+        <view className="Background" />
+        <text className="LoadingText">Memuat...</text>
+      </view>
+    );
+  }
 
   return (
-    <view>
-      <view className="Background" />
-      <view className="App">
-        <view className="Banner">
-          <view className="Logo" bindtap={onTap}>
-            {alterLogo ? (
-              <image src={reactLynxLogo} className="Logo--react" />
-            ) : (
-              <image src={lynxLogo} className="Logo--lynx" />
-            )}
-          </view>
-          <text className="Title">Reafct</text>
-          <text className="Subtitle">on Lynx</text>
-        </view>
-        <view className="Content">
-          <image src={arrow} className="Arrow" />
-          <text className="Description">Tap the logo and have fun!</text>
-          <text className="Hint">
-            Edit
-            <text
-              style={{
-                fontStyle: 'italic',
-                color: 'rgba(255, 255, 255, 0.85)',
-              }}
-            >
-              {' src/App.tsx '}
-            </text>
-            to see updates!
-          </text>
-        </view>
-        <view style={{ flex: 1 }} />
-      </view>
-    </view>
+    <MemoryRouter initialEntries={[initialRoute]} initialIndex={0}>
+      <Routes>
+        <Route path="/" element={<LoginPage />} />
+        <Route path="/home" element={<HomePage />} />
+        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/device-info" element={<DeviceInfoPage />} />
+      </Routes>
+    </MemoryRouter>
   );
 }
