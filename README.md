@@ -49,7 +49,7 @@
     </tr>
     <tr>
       <td><a href="./packages/lynx-cli"><code>@kafitra/lynx-cli</code></a></td>
-      <td><code>0.2.1</code></td>
+      <td><code>0.2.2</code></td>
       <td>CLI companion — <code>link</code>, <code>run android</code>, <code>prebuild</code>, <code>dev</code>, <code>doctor</code></td>
     </tr>
   </tbody>
