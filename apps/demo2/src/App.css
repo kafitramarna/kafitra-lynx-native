@@ -405,3 +405,184 @@ text {
 .InfoValue--green {
   color: #4ade80;
 }
+
+/* ─────────────────────────────────────────────
+   Camera Page
+───────────────────────────────────────────── */
+
+.CameraPage {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #000;
+}
+
+.CameraTopBar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 56px;
+  background-color: #1a1a1a;
+  padding: 0 8px;
+  flex-shrink: 0;
+}
+
+.CameraTopBar__spacer {
+  flex: 1;
+}
+
+.CameraBtn {
+  padding: 9px 13px;
+  background-color: #3a3a3a;
+  border-radius: 8px;
+  align-items: center;
+  justify-content: center;
+  margin-left: 4px;
+}
+
+.CameraBtn--active {
+  background-color: #b8860b;
+}
+
+.CameraBtn__text {
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.CameraViewport {
+  flex: 1;
+  background-color: #000;
+  overflow: hidden;
+}
+
+.CameraViewport__inner {
+  width: 100%;
+  height: 100%;
+}
+
+.CameraViewport__error {
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.CameraViewport__errorText {
+  font-size: 14px;
+  color: #f55;
+  text-align: center;
+}
+
+.CameraZoomBar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  height: 58px;
+  background-color: #111;
+  flex-shrink: 0;
+}
+
+.CameraZoomBtn {
+  width: 44px;
+  height: 36px;
+  background-color: #3a3a3a;
+  border-radius: 8px;
+  align-items: center;
+  justify-content: center;
+  margin: 0 20px;
+}
+
+.CameraZoomBtn__text {
+  font-size: 24px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.CameraZoomLabel {
+  width: 80px;
+  align-items: center;
+  justify-content: center;
+}
+
+.CameraZoomLabel__text {
+  font-size: 15px;
+  font-weight: 700;
+  color: #ffd700;
+}
+
+.CameraZoomRange {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.45);
+  margin-top: 2px;
+}
+
+.CameraBottomBar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  height: 108px;
+  background-color: #1a1a1a;
+  flex-shrink: 0;
+}
+
+.CameraThumb {
+  width: 60px;
+  align-items: center;
+  justify-content: center;
+  margin-right: 36px;
+}
+
+.CameraThumb__image {
+  width: 56px;
+  height: 56px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid #ffd700;
+}
+
+.CameraThumb__placeholder {
+  width: 56px;
+  height: 56px;
+  background-color: #2a2a2a;
+  border-radius: 8px;
+}
+
+.CameraShutter {
+  width: 72px;
+  height: 72px;
+  border-radius: 36px;
+  border: 4px solid #fff;
+  background-color: #fff;
+  align-items: center;
+  justify-content: center;
+}
+
+.CameraShutter--busy {
+  background-color: #888;
+}
+
+.CameraShutter__text {
+  font-size: 12px;
+  font-weight: 700;
+  color: #000;
+}
+
+.CameraStatus {
+  width: 60px;
+  align-items: center;
+  justify-content: center;
+  margin-left: 36px;
+}
+
+.CameraStatus__text {
+  font-size: 12px;
+  color: #888;
+}
+
+.CameraStatus__text--ready {
+  color: #4caf50;
+}
