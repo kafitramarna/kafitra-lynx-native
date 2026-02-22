@@ -11,13 +11,13 @@
 
 `@kafitra/lynx-autolink` scans `node_modules` for Lynx Native Module packages (identified by a `lynx.module.json` metadata file), then generates all the Android plumbing needed to wire them up:
 
-| What it does | Output |
-|---|---|
-| Scans node_modules (hoisted + nested) | List of `LynxModuleMetadata` |
-| Validates each `lynx.module.json` | Throws descriptive error on bad schema |
-| Generates `LynxAutolinkRegistry.java` | Drop-in registry class, call `registerAll()` |
-| Patches `settings.gradle` | Idempotent `include ':module-name'` block |
-| Patches `app/build.gradle` | Idempotent `implementation project(':module-name')` |
+| What it does                          | Output                                              |
+| ------------------------------------- | --------------------------------------------------- |
+| Scans node_modules (hoisted + nested) | List of `LynxModuleMetadata`                        |
+| Validates each `lynx.module.json`     | Throws descriptive error on bad schema              |
+| Generates `LynxAutolinkRegistry.java` | Drop-in registry class, call `registerAll()`        |
+| Patches `settings.gradle`             | Idempotent `include ':module-name'` block           |
+| Patches `app/build.gradle`            | Idempotent `implementation project(':module-name')` |
 
 ---
 
@@ -113,9 +113,40 @@ Used by the CLI to infer the Java package for the registry class.
 
 ---
 
+### `injectManifestPermissions(manifestFile, modules)`
+
+Collects all `permissions` entries from the provided modules and idempotently injects
+`<uses-permission android:name="..."/>` elements into `AndroidManifest.xml`.
+
+Uses `<!-- lynx-autolink-permissions-start -->` / `<!-- lynx-autolink-permissions-end -->` markers.
+If the markers are absent, the block is inserted immediately before the `<application>` tag.
+Re-running the function replaces the existing block — no duplication.
+
+```ts
+import { injectManifestPermissions } from "@kafitra/lynx-autolink";
+
+injectManifestPermissions("./android/app/src/main/AndroidManifest.xml", modules);
+```
+
+**Result in `AndroidManifest.xml`:**
+
+```xml
+<uses-permission android:name="android.permission.INTERNET" />
+<!-- lynx-autolink-permissions-start -->
+<uses-permission android:name="android.permission.CAMERA" />
+<!-- lynx-autolink-permissions-end -->
+```
+
+---
+
 ### `validateMetadata(raw, source): LynxModuleMetadata`
 
 Validates a parsed `lynx.module.json` object. Throws a descriptive error if required fields are missing or malformed.
+Enforcements include:
+
+- `android.componentTag` is **required** when `android.componentClass` is provided.
+- At least one of `moduleClass` or `componentClass` must be present.
+- All class names must match the fully-qualified Java class name pattern.
 
 ---
 
@@ -134,12 +165,17 @@ Place this file at the **root** of your Lynx Native Module npm package:
 }
 ```
 
-| Field | Type | Required | Description |
-|---|---|---|---|
-| `name` | `string` | ✅ | Module name registered with `LynxEnv` (e.g. `"LynxDeviceInfo"`) |
-| `android.moduleClass` | `string` | ✅ | Fully-qualified Java class name of the `LynxModule` implementation |
-| `android.sourceDir` | `string` | ✅ | Relative path to the Android library directory inside the package |
-| `android.gradleProjectName` | `string` | ❌ | Override for the Gradle project name. Defaults to the kebab-cased npm package name |
+| Field                       | Type       | Required                 | Description                                                                        |
+| --------------------------- | ---------- | ------------------------ | ---------------------------------------------------------------------------------- |
+| `name`                      | `string`   | ✅                       | Module name registered with `LynxEnv` (e.g. `"LynxDeviceInfo"`)                    |
+| `android.moduleClass`       | `string`   | ✅¹                      | Fully-qualified Java class name of the `LynxModule` implementation                 |
+| `android.componentClass`    | `string`   | ✅¹                      | Fully-qualified Java class name of the `LynxUI` custom element implementation      |
+| `android.componentTag`      | `string`   | ✅ when `componentClass` | JSX element tag registered with Lynx (e.g. `"camera"`)                             |
+| `android.sourceDir`         | `string`   | ✅                       | Relative path to the Android library directory inside the package                  |
+| `android.gradleProjectName` | `string`   | ❌                       | Override for the Gradle project name. Defaults to the kebab-cased npm package name |
+| `android.permissions`       | `string[]` | ❌                       | Android permissions required at runtime (e.g. `["android.permission.CAMERA"]`). Auto-injected into `AndroidManifest.xml` by `lynx link`. |
+
+> ¹ At least one of `moduleClass` or `componentClass` must be provided.
 
 ---
 
@@ -147,9 +183,16 @@ Place this file at the **root** of your Lynx Native Module npm package:
 
 ```ts
 export interface LynxModuleAndroidConfig {
-  moduleClass: string;
+  /** LynxModule class name (for native modules) */
+  moduleClass?: string;
+  /** LynxUI class name (for native UI custom elements) */
+  componentClass?: string;
+  /** JSX element tag — required when componentClass is provided */
+  componentTag?: string;
   sourceDir: string;
   gradleProjectName?: string;
+  /** Android permissions required at runtime. Injected into AndroidManifest.xml by `lynx link`. */
+  permissions?: string[];
 }
 
 export interface LynxModuleMetadata {
@@ -159,6 +202,34 @@ export interface LynxModuleMetadata {
   packageDir?: string;
   packageName?: string;
 }
+```
+
+---
+
+## Native UI Components
+
+In addition to native modules (`moduleClass`), you can register **native UI custom elements**
+(`componentClass` + `componentTag`). The generated `LynxAutolinkRegistry.java` will expose
+an `addUIBehaviorsTo(builder)` method alongside `registerAll()`.
+
+Example `lynx.module.json` for a native UI component:
+
+```json
+{
+  "name": "LynxCamera",
+  "android": {
+    "componentClass": "com.kafitra.lynxcamera.LynxCameraView",
+    "componentTag": "camera",
+    "sourceDir": "android"
+  }
+}
+```
+
+In your Activity:
+
+```java
+LynxAutolinkRegistry.registerAll();           // native modules
+LynxAutolinkRegistry.addUIBehaviorsTo(builder); // native UI components
 ```
 
 ---
