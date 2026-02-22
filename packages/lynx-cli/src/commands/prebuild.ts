@@ -44,6 +44,18 @@ function tplRootBuildGradle(): string {
     id 'com.android.application' version '8.1.0' apply false
     id 'com.android.library' version '8.1.0' apply false
 }
+
+// Force consistent Kotlin stdlib version across all subprojects to avoid
+// duplicate class errors when Lynx/CameraX transitive deps pull mixed versions.
+subprojects {
+    configurations.all {
+        resolutionStrategy {
+            force 'org.jetbrains.kotlin:kotlin-stdlib:1.8.22'
+            force 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.22'
+            force 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.22'
+        }
+    }
+}
 `;
 }
 
@@ -87,6 +99,9 @@ android {
 dependencies {
     // lynx-autolink-start
     // lynx-autolink-end
+
+    // AndroidX
+    implementation "androidx.appcompat:appcompat:1.6.1"
 
     // Lynx core
     implementation "org.lynxsdk.lynx:lynx:3.6.0"
@@ -165,6 +180,8 @@ function tplAndroidManifest(packageId: string): string {
   return `<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- lynx-autolink-permissions-start -->
+    <!-- lynx-autolink-permissions-end -->
 
     <application
         android:name=".LynxApplication"
@@ -244,7 +261,7 @@ public class LynxApplication extends Application {
 function tplMainActivity(packageId: string): string {
   return `package ${packageId};
 
-import android.app.Activity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -256,7 +273,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class MainActivity extends Activity {
+public class MainActivity extends AppCompatActivity {
 
     private LynxView mLynxView;
     private final Handler mMainHandler = new Handler(Looper.getMainLooper());
@@ -287,6 +304,7 @@ public class MainActivity extends Activity {
         LynxViewBuilder viewBuilder = new LynxViewBuilder();
         viewBuilder.setTemplateProvider(new LynxTemplateProvider(this));
         viewBuilder.addBehaviors(new XElementBehaviors().create());
+        LynxAutolinkRegistry.addUIBehaviorsTo(viewBuilder);
         return viewBuilder.build(this);
     }
 
